@@ -1,0 +1,11 @@
+export { default as HomePage } from './HomePage';
+export { default as LandingPage } from './LandingPage';
+export { default as NotFoundPage } from './NotFoundPage';
+export { OnboardingPage } from './OnboardingPage';
+export { DashboardPage } from './DashboardPage';
+export { AIMentorPage } from './AIMentorPage';
+export { RoadmapPage } from './RoadmapPage';
+export { UniversitiesPage } from './UniversitiesPage';
+export { ScholarshipsPage } from './ScholarshipsPage';
+export { DeadlinesPage } from './DeadlinesPage';
+export { ProfileTestPage } from './ProfileTestPage';
