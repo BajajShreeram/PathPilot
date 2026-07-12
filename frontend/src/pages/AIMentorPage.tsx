@@ -1,31 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
+import type { ProfileData } from '../types';
+import { getProfile } from '../utils/profileStorage';
+import { getUserStorageKey } from '../utils/authSession';
+import { getAchievements } from '../utils/achievementsStorage';
 
 interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-}
-
-interface ProfileData {
-  name?: string;
-  stream?: string;
-  field?: string;
-  careerInterests?: string[];
-  career?: string[];
-  studyAbroad?: boolean;
-  examPreference?: string;
-  favouriteSubjects?: string[];
-  subjects?: string[];
-  gradeClass: string;
-  budget: string;
-  needScholarships: boolean;
-  preferredCountry?: string;
-  dreamUniversity?: string;
-  subjectInterests?: string[];
-  strongSubjects?: string[];
-  weakSubjects?: string[];
-  country?: string;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -51,6 +34,8 @@ const SUGGESTED_PROMPTS = [
   },
 ];
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/$/, '');
+
 const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
@@ -66,24 +51,28 @@ const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData,
 };
 
 export const AIMentorPage: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const chatKey = getUserStorageKey('chat_history');
+      const stored = chatKey ? localStorage.getItem(chatKey) : null;
+      if (!stored) return [];
+      return (JSON.parse(stored) as Array<Omit<Message, 'timestamp'> & { timestamp: string }>).map(
+        (message) => ({ ...message, timestamp: new Date(message.timestamp) }),
+      );
+    } catch {
+      return [];
+    }
+  });
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [profile] = useState<ProfileData | null>(() => getProfile());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    const storedProfile = localStorage.getItem('pathpilot_profile');
-    if (storedProfile) {
-      try {
-        const parsedProfile = JSON.parse(storedProfile);
-        setProfile(parsedProfile);
-      } catch (error) {
-        console.error('Failed to parse profile:', error);
-      }
-    }
-  }, []);
+    const chatKey = getUserStorageKey('chat_history');
+    if (chatKey) localStorage.setItem(chatKey, JSON.stringify(messages));
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -131,13 +120,14 @@ I can help you:
 What would you like to work on today?`;
   };
 
-  const handleSendMessage = (message: string) => {
-    if (!message.trim()) return;
+  const handleSendMessage = async (message: string) => {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage || isTyping) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: message,
+      content: trimmedMessage,
       timestamp: new Date(),
     };
 
@@ -145,42 +135,46 @@ What would you like to work on today?`;
     setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/mentor`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: trimmedMessage, profile: { ...(profile ?? {}), achievements: getAchievements() } }),
+      });
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(
+          data?.detail?.message || 'The AI Mentor is unavailable right now. Please try again.',
+        );
+      }
+      if (typeof data?.reply !== 'string' || !data.reply.trim()) {
+        throw new Error('The AI Mentor returned an invalid response. Please try again.');
+      }
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: getDemoResponse(message),
+        content: data.reply,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content:
+          error instanceof TypeError
+            ? 'I’m having trouble connecting right now. Please check that the PathPilot backend is running and try again.'
+            : error instanceof Error
+              ? error.message
+              : 'The AI Mentor is unavailable right now. Please try again shortly.',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000);
-  };
-
-  const getDemoResponse = (prompt: string): string => {
-    const lowerPrompt = prompt.toLowerCase();
-    
-    if (lowerPrompt.includes('next') || lowerPrompt.includes('should i do')) {
-      return "Based on your profile, I recommend focusing on these key areas:\n\n1. **Strengthen Your Foundation** - Focus on core subjects related to your stream\n2. **Entrance Exam Prep** - Start preparing for your target exams\n3. **Research Universities** - Explore universities that match your interests\n4. **Build Your Profile** - Engage in extracurricular activities and projects\n\nWould you like me to create a detailed action plan for any of these areas?";
     }
-    
-    if (lowerPrompt.includes('universit')) {
-      return "Here are some universities that match your profile:\n\n🎓 **Top Recommendations:**\n\n1. **MIT** - Strong engineering programs, research opportunities\n2. **Stanford University** - Innovation-focused, entrepreneurship culture\n3. **UC Berkeley** - Excellent computer science, diverse campus\n4. **Carnegie Mellon** - Top-tier tech programs, industry connections\n\nThese universities align with your academic interests and career goals. Would you like more details about any specific university?";
-    }
-    
-    if (lowerPrompt.includes('exam') || lowerPrompt.includes('prepare')) {
-      return "Here's a comprehensive exam preparation strategy:\n\n📚 **Preparation Plan:**\n\n**Phase 1: Foundation (3 months)**\n- Review all core concepts\n- Identify weak areas\n- Build strong fundamentals\n\n**Phase 2: Practice (2 months)**\n- Solve previous year papers\n- Take mock tests weekly\n- Analyze mistakes\n\n**Phase 3: Revision (1 month)**\n- Quick revision notes\n- Focus on high-weightage topics\n- Maintain confidence\n\nWould you like a detailed study schedule for any specific exam?";
-    }
-    
-    if (lowerPrompt.includes('scholarship')) {
-      return "Here are scholarship opportunities you should consider:\n\n💰 **Top Scholarships:**\n\n1. **Merit-Based Scholarships**\n   - Full tuition coverage for top performers\n   - GPA requirement: 3.8+\n\n2. **Need-Based Financial Aid**\n   - Based on family income\n   - Can cover 50-100% of costs\n\n3. **Subject-Specific Grants**\n   - STEM scholarships available\n   - Research opportunities included\n\n4. **International Student Scholarships**\n   - For students studying abroad\n   - Varies by country and university\n\nI can help you find scholarships that match your profile. Would you like me to search for specific ones?";
-    }
-    
-    if (lowerPrompt.includes('study plan') || lowerPrompt.includes('7-day')) {
-      return "Here's your personalized 7-day study plan:\n\n📅 **Week Study Plan:**\n\n**Day 1-2:** Mathematics & Problem Solving\n- 3 hours: Core concepts\n- 2 hours: Practice problems\n- 1 hour: Review\n\n**Day 3-4:** Science/Technical Subjects\n- 3 hours: Theory and applications\n- 2 hours: Lab work/practice\n- 1 hour: Revision\n\n**Day 5-6:** Language & Reasoning\n- 2 hours: Reading comprehension\n- 2 hours: Analytical reasoning\n- 2 hours: Practice tests\n\n**Day 7:** Mock Test & Review\n- Full-length practice test\n- Analyze performance\n- Plan next week\n\nWould you like me to customize this plan based on specific exams or subjects?";
-    }
-    
-    return "Thank you for your question! I'm here to help you with:\n\n✨ Career guidance and planning\n🎓 University recommendations\n📚 Study strategies and exam prep\n💰 Scholarship opportunities\n🗺️ Personalized roadmaps\n\nFeel free to ask me anything about your educational journey. How can I assist you today?";
   };
 
   const handleSuggestedPrompt = (prompt: string) => {
@@ -195,18 +189,18 @@ What would you like to work on today?`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50/50 via-white to-blue-50/50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-10 lg:py-16">
           {messages.length === 0 ? (
             // Welcome Screen
-            <div className="text-center py-12 animate-fadeInUp">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-600 to-blue-600 rounded-3xl flex items-center justify-center text-5xl mx-auto mb-8 shadow-2xl animate-float">
+            <div className="text-center py-8 lg:py-12 animate-fadeInUp">
+              <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-10 shadow-lg">
                 🤖
               </div>
-              <div className="max-w-2xl mx-auto mb-12">
-                <div className="bg-white border-2 border-purple-100 rounded-3xl p-10 text-left shadow-xl">
+              <div className="max-w-3xl mx-auto mb-16">
+                <div className="bg-white border border-slate-200 rounded-3xl p-8 sm:p-10 text-left shadow-lg">
                   <div className="whitespace-pre-wrap text-gray-700 leading-relaxed text-lg">
                     {getWelcomeMessage()}
                   </div>
@@ -214,14 +208,14 @@ What would you like to work on today?`;
               </div>
 
               {/* Suggested Prompts */}
-              <div className="mt-12">
-                <p className="text-base font-semibold text-gray-700 mb-6">💡 Try asking me:</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 max-w-5xl mx-auto">
+              <div className="mt-14">
+                <p className="text-sm font-semibold uppercase tracking-widest text-gray-500 mb-7">Try asking me</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                   {SUGGESTED_PROMPTS.map((prompt, index) => (
                     <button
                       key={index}
                       onClick={() => handleSuggestedPrompt(prompt.text)}
-                      className="bg-white hover:bg-gradient-to-br hover:from-purple-50 hover:to-blue-50 border-2 border-gray-200 hover:border-purple-300 rounded-2xl p-6 text-left transition-all duration-300 shadow-md hover:shadow-xl group"
+                      className="bg-white hover:bg-purple-50/60 border border-slate-200 hover:border-purple-300 rounded-2xl p-6 text-left transition-all duration-300 shadow-sm hover:shadow-lg group"
                     >
                       <div className="flex items-start gap-4">
                         <span className="text-3xl group-hover:scale-110 transition-transform duration-300">
@@ -238,7 +232,7 @@ What would you like to work on today?`;
             </div>
           ) : (
             // Messages
-            <div className="space-y-8">
+            <div className="space-y-10 py-4">
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -253,10 +247,10 @@ What would you like to work on today?`;
                   )}
                   
                   <div
-                    className={`max-w-[75%] sm:max-w-[65%] rounded-3xl px-7 py-5 ${
+                    className={`max-w-[82%] sm:max-w-[70%] rounded-3xl px-7 py-5 ${
                       message.role === 'user'
                         ? 'bg-gradient-to-br from-purple-600 to-blue-600 text-white shadow-xl'
-                        : 'bg-white border-2 border-gray-100 text-gray-800 shadow-lg'
+                        : 'bg-white border border-slate-200 text-gray-800 shadow-md'
                     }`}
                   >
                     <div className="whitespace-pre-wrap break-words text-base leading-relaxed">
@@ -287,7 +281,7 @@ What would you like to work on today?`;
                   <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center text-white text-2xl shadow-lg">
                     🤖
                   </div>
-                  <div className="bg-white border-2 border-gray-100 rounded-3xl px-7 py-5 shadow-lg">
+                  <div className="bg-white border border-slate-200 rounded-3xl px-7 py-5 shadow-md">
                     <div className="flex gap-2">
                       <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce"></div>
                       <div className="w-3 h-3 bg-gray-400 rounded-full animate-bounce animation-delay-200"></div>
@@ -304,8 +298,8 @@ What would you like to work on today?`;
       </div>
 
       {/* Input Area */}
-      <div className="bg-white/95 backdrop-blur-sm border-t-2 border-gray-200 shadow-2xl sticky bottom-0">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="bg-white/90 backdrop-blur-xl border-t border-slate-200 sticky bottom-0">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-12 py-5 lg:py-6">
           <div className="flex gap-4 items-end">
             <div className="flex-1 relative">
               <textarea
@@ -314,7 +308,7 @@ What would you like to work on today?`;
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask me anything about your career, universities, exams..."
-                className="w-full resize-none rounded-2xl border-2 border-gray-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 px-6 py-4 text-base outline-none transition-all max-h-32 shadow-sm"
+                className="w-full resize-none rounded-2xl border border-slate-300 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 px-6 py-4 text-base outline-none transition-all max-h-32 shadow-sm"
                 rows={1}
                 style={{
                   minHeight: '56px',

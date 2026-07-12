@@ -1,0 +1,45 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { ExamName, ExamStatus, ProfileData } from '../types';
+import { getProfile, saveProfileToSupabase, uploadProfileImage } from '../utils/profileStorage';
+import { confirmAndSignOut, getCurrentUser } from '../utils/authSession';
+import { getAchievements } from '../utils/achievementsStorage';
+import { getProfileCompletion } from '../utils/profileCompletion';
+import { LocalFileUpload } from '../components/ui/LocalFileUpload';
+
+const EXAMS: ExamName[] = ['JEE', 'NEET', 'SAT', 'IELTS', 'TOEFL', 'GRE', 'GMAT'];
+const STATUSES: ExamStatus[] = ['Not Attempted', 'Preparing', 'Completed'];
+const fieldClass = 'w-full rounded-xl border border-slate-300 px-4 py-3 text-gray-900 disabled:bg-slate-50 disabled:text-gray-600';
+
+export const ProfilePage: React.FC = () => {
+  const navigate = useNavigate(); const user = getCurrentUser();
+  const [profile, setProfile] = useState<ProfileData>(() => getProfile()!);
+  const [isEditing, setIsEditing] = useState(false); const [saved, setSaved] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const achievements = getAchievements(); const completion = getProfileCompletion(profile, achievements.length);
+  const update = (key: keyof ProfileData, value: ProfileData[keyof ProfileData]) => { setProfile((current) => ({ ...current, [key]: value })); setSaved(false); };
+  const updateExam = (exam: ExamName, status: ExamStatus) => update('examStatuses', { ...(profile.examStatuses || {}), [exam]: status } as ProfileData['examStatuses']);
+  const handleSave = async (event: React.FormEvent) => { event.preventDefault(); try { let next = { ...profile, grade: profile.gradeClass }; if (profileImageFile) { const uploaded = await uploadProfileImage(profileImageFile); next = { ...next, profilePhoto: { ...(next.profilePhoto!), storageUrl: uploaded.path, previewUrl: uploaded.signedUrl } }; } await saveProfileToSupabase(next); setProfile(next); setSaved(true); setIsEditing(false); } catch (error) { window.alert(error instanceof Error ? error.message : 'Unable to save profile.'); } };
+  const handleSignOut = async () => { if (await confirmAndSignOut()) navigate('/login', { replace: true }); };
+  const text = (value: unknown) => typeof value === 'string' ? value : '';
+  const sectionTitle = (title: string) => <h2 className="text-xl font-bold text-gray-900 md:col-span-2">{title}</h2>;
+  const input = (key: keyof ProfileData, label: string, readOnly = false) => <label><span className="mb-2 block text-sm font-semibold text-gray-700">{label}</span><input value={text(profile[key])} disabled={!isEditing || readOnly} onChange={(event) => update(key, event.target.value)} className={fieldClass}/></label>;
+  const listInput = (key: 'favouriteSubjects' | 'weakSubjects' | 'careerInterests', label: string) => <label><span className="mb-2 block text-sm font-semibold text-gray-700">{label}</span><textarea rows={2} value={(profile[key] || []).join(', ')} disabled={!isEditing} onChange={(event) => update(key, event.target.value.split(',').map((item) => item.trim()).filter(Boolean))} className={fieldClass}/></label>;
+
+  return <div className="min-h-screen px-5 py-10 sm:px-8 lg:py-14"><div className="mx-auto max-w-5xl">
+    <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-sm font-semibold uppercase tracking-widest text-blue-600">Your details</p><h1 className="mt-2 text-3xl font-bold text-gray-900">Profile</h1><p className="mt-2 text-gray-600">One profile powers every PathPilot recommendation.</p></div><button onClick={() => setIsEditing((value) => !value)} className="rounded-xl border border-blue-200 bg-white px-5 py-3 font-semibold text-blue-700 hover:bg-blue-50">{isEditing ? 'Cancel editing' : 'Edit profile'}</button></div>
+    {saved && <div className="mb-6 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-green-800">Profile saved. Your completion and recommendations are updated.</div>}
+    <section id="missing-items" className="mb-8 rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-7 shadow-lg"><div className="flex items-end justify-between gap-4"><div><h2 className="text-2xl font-bold text-gray-900">Profile Completion</h2><p className="mt-2 text-sm font-semibold text-purple-700">Profile strength: {completion.strength}</p></div><p className="text-4xl font-bold text-blue-700">{completion.percentage}%</p></div><div className="mt-5 h-4 overflow-hidden rounded-full bg-white shadow-inner"><div className="h-full rounded-full bg-gradient-to-r from-blue-600 to-purple-600 transition-all" style={{width:`${completion.percentage}%`}}/></div><div className="mt-6 grid gap-2 sm:grid-cols-2">{completion.items.map((item)=><p key={item.label} className={`text-sm font-medium ${item.complete?'text-green-700':'text-gray-500'}`}>{item.complete?'✔':'⬜'} {item.label}</p>)}</div><div className="mt-6 rounded-xl bg-white/70 p-4"><p className="font-semibold text-gray-900">Suggestions</p><ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-gray-700">{completion.suggestions.length ? completion.suggestions.map((item)=><li key={item}>{item}</li>) : <li>Your profile is ready for strong personalization.</li>}</ul></div></section>
+    <form onSubmit={handleSave} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg sm:p-9"><div className="grid gap-6 md:grid-cols-2">
+      {sectionTitle('Basic Information')}{input('name','Name')}<label><span className="mb-2 block text-sm font-semibold text-gray-700">Email</span><input value={user?.email || ''} readOnly className={`${fieldClass} bg-slate-50`}/></label>{input('phone','Phone')}{input('country','Country')}{input('city','City')}
+      {sectionTitle('Academic Information')}{input('gradeClass','Grade')}{input('stream','Stream')}{input('board','Board')}{input('academicScore','GPA / Percentage')}{listInput('favouriteSubjects','Favourite Subjects')}{listInput('weakSubjects','Weak Subjects')}
+      {sectionTitle('Career & Study Preferences')}{listInput('careerInterests','Career Interests')}{input('dreamJob','Dream Job')}{input('dreamUniversity','Dream University')}<label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4"><input type="checkbox" checked={profile.studyAbroad} disabled={!isEditing} onChange={(e)=>update('studyAbroad',e.target.checked)} className="h-5 w-5"/><span className="font-medium">Study Abroad</span></label>{input('preferredCountry','Preferred Country')}
+      {sectionTitle('Financial Information')}{input('budget','Budget')}<label className="flex items-center gap-3 rounded-xl border border-slate-200 p-4"><input type="checkbox" checked={profile.needScholarships} disabled={!isEditing} onChange={(e)=>update('needScholarships',e.target.checked)} className="h-5 w-5"/><span className="font-medium">Scholarship Required</span></label>
+      {sectionTitle('Exam Progress')}{EXAMS.map((exam)=><label key={exam}><span className="mb-2 block text-sm font-semibold text-gray-700">{exam}</span><select value={profile.examStatuses?.[exam] || 'Not Attempted'} disabled={!isEditing} onChange={(e)=>updateExam(exam,e.target.value as ExamStatus)} className={fieldClass}>{STATUSES.map((status)=><option key={status}>{status}</option>)}</select></label>)}
+      {sectionTitle('Portfolio Links')}{input('githubUrl','GitHub')}{input('linkedinUrl','LinkedIn')}{input('portfolioUrl','Portfolio Website')}
+      {sectionTitle('Files')}<LocalFileUpload label="Profile Picture" accept="image/jpeg,image/png,image/webp" allowedTypes={['image/jpeg','image/png','image/webp']} imagePreview value={profile.profilePhoto} onChange={(metadata,file)=>{update('profilePhoto',metadata);setProfileImageFile(file);}}/><LocalFileUpload label="Resume" accept="application/pdf" allowedTypes={['application/pdf']} value={profile.resumeFile} onChange={(metadata)=>update('resumeFile',metadata)}/>
+    </div>{isEditing && <div className="mt-8 flex justify-end"><button className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white">Save Changes</button></div>}</form>
+    <div className="mt-8 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6"><h2 className="text-lg font-bold text-gray-900">Achievements</h2><p className="mt-2 text-sm text-gray-600">{achievements.length} achievement{achievements.length===1?'':'s'} added to your profile.</p><button onClick={()=>navigate('/achievements')} className="mt-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 font-semibold text-white">Manage Achievements</button></div>
+    <div className="mt-8 rounded-2xl border border-red-200 bg-white p-6"><h2 className="text-lg font-bold text-gray-900">Session</h2><p className="mt-2 text-sm text-gray-600">Signing out keeps your saved profile and progress on this device.</p><button onClick={handleSignOut} className="mt-4 rounded-xl border border-red-200 px-5 py-3 font-semibold text-red-700 hover:bg-red-50">Sign Out</button></div>
+  </div></div>;
+};

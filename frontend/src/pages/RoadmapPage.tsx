@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import type { ProfileData } from '../types';
+import { getProfile } from '../utils/profileStorage';
+import { getUserStorageKey } from '../utils/authSession';
+import { getAchievements } from '../utils/achievementsStorage';
 
 type TaskStatus = 'not-started' | 'in-progress' | 'completed';
 
@@ -36,23 +39,21 @@ const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData,
   return defaultValue;
 };
 
-const ROADMAP_STORAGE_KEY = 'pathpilot_roadmap_progress';
-
 export const RoadmapPage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [progress, setProgress] = useState<RoadmapProgress>({});
 
   useEffect(() => {
-    const storedProfile = localStorage.getItem('pathpilot_profile');
-    if (storedProfile) {
+    const parsedProfile = getProfile();
+    if (parsedProfile) {
       try {
-        const parsedProfile = JSON.parse(storedProfile) as ProfileData;
         setProfile(parsedProfile);
-        const roadmap = generatePersonalizedRoadmap();
+        const roadmap = generatePersonalizedRoadmap(parsedProfile);
         setMilestones(roadmap);
         
-        const storedProgress = localStorage.getItem(ROADMAP_STORAGE_KEY);
+        const progressKey = getUserStorageKey('roadmap_progress');
+        const storedProgress = progressKey ? localStorage.getItem(progressKey) : null;
         if (storedProgress) {
           setProgress(JSON.parse(storedProgress));
         }
@@ -88,7 +89,8 @@ export const RoadmapPage: React.FC = () => {
         },
       };
 
-      localStorage.setItem(ROADMAP_STORAGE_KEY, JSON.stringify(newProgress));
+      const progressKey = getUserStorageKey('roadmap_progress');
+      if (progressKey) localStorage.setItem(progressKey, JSON.stringify(newProgress));
       return newProgress;
     });
   };
@@ -136,9 +138,166 @@ export const RoadmapPage: React.FC = () => {
   const { completedTasks, totalTasks, percentage } = calculateProgress();
   const nextTask = getNextRecommendedTask();
 
-  const generatePersonalizedRoadmap = (): Milestone[] => {
-    // Keeping business logic as-is
-    return generateDefaultRoadmap();
+  const generatePersonalizedRoadmap = (profileData: ProfileData): Milestone[] => {
+    const stream = (profileData.stream || 'Other').toLowerCase();
+    const grade = profileData.grade || profileData.gradeClass || 'Current grade';
+    const favouriteSubjects = profileData.favouriteSubjects || [];
+    const weakSubjects = profileData.weakSubjects || [];
+    const careerInterests = profileData.careerInterests || [];
+    const primaryCareer = careerInterests[0] || `${profileData.stream} career`;
+    const dreamUniversity = profileData.dreamUniversity || 'your shortlisted universities';
+    const destination = profileData.studyAbroad
+      ? profileData.preferredCountry || 'your preferred study-abroad destination'
+      : 'India';
+    const lowBudget = profileData.budget === 'LOW' || profileData.budget === 'MEDIUM';
+    const achievements = getAchievements();
+    const achievementCategories = new Set(achievements.map((achievement) => achievement.category));
+    const achievementSuggestion = achievementCategories.has('Research')
+      ? 'Develop your existing research work into a polished report or presentation'
+      : achievementCategories.has('Projects') || achievementCategories.has('Hackathons')
+        ? 'Improve your strongest existing project and document measurable outcomes'
+        : achievementCategories.has('Leadership') || achievementCategories.has('Volunteering')
+          ? 'Connect your leadership or service experience to your intended course'
+          : 'Ask a teacher or mentor to review your work and suggest improvements';
+
+    const plans: Record<string, {
+      courses: string[];
+      exams: string[];
+      skills: string[];
+      projects: string[];
+      application: string;
+    }> = {
+      engineering: {
+        courses: ['Strengthen Mathematics and Physics fundamentals', 'Complete an introductory programming course', 'Practice problem solving and quantitative reasoning'],
+        exams: ['JEE Main', 'JEE Advanced'],
+        skills: ['Coding', 'Logical problem solving', 'Engineering design'],
+        projects: ['Build one coding or engineering project', 'Document the project on a portfolio or GitHub', 'Join a science, robotics, or coding challenge'],
+        application: 'Prepare for JoSAA counselling and engineering applications',
+      },
+      medical: {
+        courses: ['Master NCERT Biology', 'Revise Chemistry concepts and reactions', 'Practice Physics numericals for medical entrances'],
+        exams: ['NEET'],
+        skills: ['Biology recall', 'Clinical reasoning foundations', 'Time-managed question solving'],
+        projects: ['Complete a biology research or health-awareness project', 'Explore medical careers through verified talks or shadowing where permitted', 'Maintain a Biology mistake and revision journal'],
+        application: 'Prepare for medical counselling and AIIMS or other medical-college choices',
+      },
+      commerce: {
+        courses: ['Strengthen Accountancy and Economics', 'Complete an Excel or financial-analysis course', 'Study business communication and statistics'],
+        exams: ['CUET', 'CA Foundation'],
+        skills: ['Accounting', 'Financial analysis', 'Business communication'],
+        projects: ['Analyse a company or small-business case', 'Build a basic budget or financial model', 'Pursue a commerce, finance, or accounting internship'],
+        application: 'Prepare BCom, BBA, CA, CFA-foundation, or related applications',
+      },
+      law: {
+        courses: ['Build legal reasoning and reading comprehension', 'Study current affairs and constitutional basics', 'Practice structured writing and argumentation'],
+        exams: ['CLAT', 'AILET'],
+        skills: ['Legal reading', 'Critical reasoning', 'Clear written argument'],
+        projects: ['Maintain a current-affairs and case-reading journal', 'Join debate, Model UN, or a legal-awareness activity', 'Complete a legal research or policy writing sample'],
+        application: 'Prepare NLU preferences, counselling, and law-school applications',
+      },
+      design: {
+        courses: ['Practice observation drawing and visual communication', 'Learn design fundamentals and creative problem solving', 'Explore digital design tools relevant to your interests'],
+        exams: ['NID DAT', 'UCEED', 'NIFT Entrance'],
+        skills: ['Portfolio storytelling', 'Sketching', 'Design thinking'],
+        projects: ['Create 3–5 original portfolio projects', 'Document process, iterations, and final outcomes', 'Practice studio-test and portfolio presentation skills'],
+        application: 'Prepare portfolio submissions and design-school interviews',
+      },
+      arts: {
+        courses: ['Strengthen academic writing and reading', 'Study core humanities and social-science concepts', 'Complete a research and communication course'],
+        exams: ['CUET'],
+        skills: ['Research', 'Writing', 'Critical analysis'],
+        projects: ['Produce an essay, publication, or humanities research project', 'Join a relevant club, competition, or community initiative', 'Build a small writing or creative portfolio'],
+        application: 'Prepare humanities programme applications and writing samples',
+      },
+      other: {
+        courses: ['Strengthen the subjects most relevant to your goals', 'Complete a foundational course in your chosen field', 'Build communication and analytical skills'],
+        exams: ['CUET or programme-specific entrance exam'],
+        skills: ['Research', 'Communication', 'Project execution'],
+        projects: ['Complete one project related to your primary career interest', 'Document what you learned and the outcome', 'Seek a relevant competition, volunteer role, or internship'],
+        application: 'Prepare programme-specific university applications',
+      },
+    };
+
+    const plan = plans[stream] || plans.other;
+    const preferredExam = profileData.examPreference && profileData.examPreference !== 'None'
+      ? profileData.examPreference
+      : plan.exams[0];
+    const recommendedExams = Array.from(new Set([
+      preferredExam,
+      ...plan.exams,
+      ...(profileData.studyAbroad ? ['SAT/ACT', 'IELTS/TOEFL'] : []),
+    ])).filter(Boolean);
+    const subjectFocus = favouriteSubjects.length
+      ? `Use your strength in ${favouriteSubjects.slice(0, 2).join(' and ')} to support ${primaryCareer}`
+      : `Identify the strongest subjects for ${primaryCareer}`;
+    const improvementFocus = weakSubjects.length
+      ? `Create a weekly improvement plan for ${weakSubjects.slice(0, 2).join(' and ')}`
+      : 'Review performance monthly and identify subjects that need support';
+
+    const task = (id: string, text: string): Task => ({ id, text, status: 'not-started' });
+    const milestone = (id: string, title: string, date: string, tasks: Array<[string, string]>): Milestone => ({
+      id: `${stream}-${id}`,
+      title,
+      date,
+      tasks: tasks.map(([taskId, text]) => task(`${stream}-${id}-${taskId}`, text)),
+    });
+
+    const roadmap: Milestone[] = [
+      milestone('foundation', `${grade}: Build Your ${profileData.stream} Foundation`, 'Next 8–12 weeks', [
+        ['subjects', subjectFocus],
+        ['improvement', improvementFocus],
+        ['course-1', plan.courses[0]],
+        ['course-2', plan.courses[1]],
+      ]),
+      milestone('skills', `Courses & Skills for ${primaryCareer}`, 'Next 3–6 months', [
+        ['course-3', plan.courses[2]],
+        ['skill-1', `Develop ${plan.skills[0]} through weekly practice`],
+        ['skill-2', `Build evidence of ${plan.skills[1]} and ${plan.skills[2]}`],
+        ['career', `Research the education path and daily work of ${primaryCareer}`],
+      ]),
+      milestone('projects', `${profileData.stream} Projects & Experience`, 'Next 4–8 months', [
+        ['project-1', plan.projects[0]],
+        ['project-2', plan.projects[1]],
+        ['project-3', plan.projects[2]],
+        ['review', achievementSuggestion],
+      ]),
+      milestone('exams', `Entrance Exam Plan: ${recommendedExams.join(' • ')}`, '6–12 months before applications', [
+        ['syllabus', `Review the latest official syllabus and format for ${recommendedExams.join(', ')}`],
+        ['schedule', `Create a weekly preparation schedule for ${preferredExam}`],
+        ['mock', 'Take timed mock tests and maintain an error log'],
+        ['register', 'Track official registration windows and required documents'],
+      ]),
+      milestone('funding', 'Scholarships & Financial Planning', '4–10 months before applications', [
+        ['budget', `Compare tuition and living costs against your ${profileData.budget || 'selected'} budget`],
+        ['scholarships', profileData.needScholarships || lowBudget ? `Shortlist need-based and merit scholarships matched to your profile${achievements.length ? ' and achievements' : ''}` : 'Review merit scholarships and institutional funding options'],
+        ['documents', 'Prepare income, academic, identity, and achievement documents early'],
+        ['deadlines', `Track scholarship deadlines for ${destination}`],
+      ]),
+      milestone('applications', `University Application Phase: ${dreamUniversity}`, 'Application year', [
+        ['shortlist', `Build a Dream, Very Good, Good, and Reasonable shortlist for ${destination}`],
+        ['requirements', `Verify eligibility, required subjects, and exams for ${dreamUniversity}`],
+        ['materials', profileData.studyAbroad ? 'Draft essays, statement of purpose, recommendations, and activity records' : plan.application],
+        ['submit', 'Submit applications before official deadlines and track each application status'],
+      ]),
+    ];
+
+    if (profileData.studyAbroad) {
+      roadmap.push(milestone('departure', `Study Abroad Preparation for ${destination}`, 'After receiving an offer', [
+        ['offer', 'Compare offers, funding conditions, and total cost before accepting'],
+        ['visa', `Review the official student visa process for ${destination}`],
+        ['finance', 'Arrange proof of funds, insurance, accommodation, and travel documents'],
+        ['departure', 'Complete pre-departure planning and university enrolment steps'],
+      ]));
+    } else {
+      roadmap.push(milestone('admission', 'Counselling, Admission & Transition', 'After entrance results', [
+        ['counselling', 'Register for the relevant counselling or admission process'],
+        ['compare', 'Compare programme curriculum, cost, location, and career outcomes'],
+        ['documents', 'Complete document verification and admission formalities'],
+        ['transition', 'Plan first-semester courses, skills, and campus opportunities'],
+      ]));
+    }
+
+    return roadmap;
   };
 
   const generateDefaultRoadmap = (): Milestone[] => {

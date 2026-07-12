@@ -1,12 +1,13 @@
 /**
  * Comprehensive University Database
- * 100 universities across multiple streams and regions
+ * 150+ universities across multiple streams and regions
  */
 
 export type Stream = 'Engineering' | 'Medical' | 'Commerce' | 'Law' | 'Design' | 'Arts' | 'Other';
 export type Category = 'Dream' | 'Very Good' | 'Good' | 'Reasonable';
 
 export interface University {
+  id: string;
   name: string;
   country: string;
   city: string;
@@ -16,9 +17,23 @@ export interface University {
   tuitionRange: string;
   scholarshipAvailability: boolean;
   oneLineDescription: string;
+  publicOrPrivate: 'Public' | 'Private';
+  studyAbroad: boolean;
+  officialWebsite: string;
+  detailedOverview: string;
+  relevantPrograms: string[];
+  requiredSubjects: string[];
+  eligibility: string;
+  livingCostEstimate: string;
+  campusLocationInfo: string;
+  careerOutcomes: string[];
+  suggestedNextSteps: string[];
 }
 
-export const universities: University[] = [
+type UniversitySeed = Omit<University, 'id' | 'publicOrPrivate' | 'studyAbroad' | 'officialWebsite' | 'detailedOverview' | 'relevantPrograms' | 'requiredSubjects' | 'eligibility' | 'livingCostEstimate' | 'campusLocationInfo' | 'careerOutcomes' | 'suggestedNextSteps'> &
+  Partial<Pick<University, 'publicOrPrivate' | 'officialWebsite'>>;
+
+const baseUniversities: UniversitySeed[] = [
   // ============================================
   // ENGINEERING (20 universities)
   // ============================================
@@ -1147,6 +1162,169 @@ export const universities: University[] = [
     oneLineDescription: 'Leading Polish university with English programs and affordable European education',
   },
 ];
+
+type SupplementSeed = [string, string, string, Stream, Category, University['publicOrPrivate'], string];
+
+const supplementalSeeds: SupplementSeed[] = [
+  ['IIT Kanpur', 'India', 'Kanpur', 'Engineering', 'Dream', 'Public', 'https://www.iitk.ac.in'],
+  ['IIT Kharagpur', 'India', 'Kharagpur', 'Engineering', 'Dream', 'Public', 'https://www.iitkgp.ac.in'],
+  ['IIIT Hyderabad', 'India', 'Hyderabad', 'Engineering', 'Very Good', 'Private', 'https://www.iiit.ac.in'],
+  ['University of Waterloo', 'Canada', 'Waterloo', 'Engineering', 'Very Good', 'Public', 'https://uwaterloo.ca'],
+  ['University of Toronto', 'Canada', 'Toronto', 'Engineering', 'Dream', 'Public', 'https://www.utoronto.ca'],
+  ['RWTH Aachen University', 'Germany', 'Aachen', 'Engineering', 'Very Good', 'Public', 'https://www.rwth-aachen.de'],
+  ['KAIST', 'South Korea', 'Daejeon', 'Engineering', 'Dream', 'Public', 'https://www.kaist.ac.kr'],
+  ['University of Technology Sydney', 'Australia', 'Sydney', 'Engineering', 'Good', 'Public', 'https://www.uts.edu.au'],
+  ['AIIMS Jodhpur', 'India', 'Jodhpur', 'Medical', 'Very Good', 'Public', 'https://www.aiimsjodhpur.edu.in'],
+  ['Kasturba Medical College Manipal', 'India', 'Manipal', 'Medical', 'Very Good', 'Private', 'https://www.manipal.edu/kmc-manipal.html'],
+  ['University of Toronto Faculty of Medicine', 'Canada', 'Toronto', 'Medical', 'Dream', 'Public', 'https://temertymedicine.utoronto.ca'],
+  ['University of Edinburgh Medical School', 'UK', 'Edinburgh', 'Medical', 'Dream', 'Public', 'https://www.ed.ac.uk/medicine-vet-medicine'],
+  ['Charité Universitätsmedizin Berlin', 'Germany', 'Berlin', 'Medical', 'Dream', 'Public', 'https://www.charite.de'],
+  ['Monash University Faculty of Medicine', 'Australia', 'Melbourne', 'Medical', 'Very Good', 'Public', 'https://www.monash.edu/medicine'],
+  ['Duke-NUS Medical School', 'Singapore', 'Singapore', 'Medical', 'Very Good', 'Private', 'https://www.duke-nus.edu.sg'],
+  ['Weill Cornell Medicine-Qatar', 'Qatar', 'Doha', 'Medical', 'Very Good', 'Private', 'https://qatar-weill.cornell.edu'],
+  ['Shri Ram College of Commerce', 'India', 'New Delhi', 'Commerce', 'Dream', 'Public', 'https://www.srcc.edu'],
+  ['Narsee Monjee College of Commerce', 'India', 'Mumbai', 'Commerce', 'Very Good', 'Private', 'https://nmcollege.in'],
+  ['London School of Economics', 'UK', 'London', 'Commerce', 'Dream', 'Public', 'https://www.lse.ac.uk'],
+  ['University of British Columbia Sauder School', 'Canada', 'Vancouver', 'Commerce', 'Very Good', 'Public', 'https://www.sauder.ubc.ca'],
+  ['Bocconi University', 'Italy', 'Milan', 'Commerce', 'Dream', 'Private', 'https://www.unibocconi.eu'],
+  ['Erasmus University Rotterdam', 'Netherlands', 'Rotterdam', 'Commerce', 'Very Good', 'Public', 'https://www.eur.nl'],
+  ['Hong Kong University of Science and Technology', 'Hong Kong', 'Hong Kong', 'Commerce', 'Very Good', 'Public', 'https://hkust.edu.hk'],
+  ['American University of Dubai', 'UAE', 'Dubai', 'Commerce', 'Good', 'Private', 'https://www.aud.edu'],
+  ['NALSAR University of Law', 'India', 'Hyderabad', 'Law', 'Dream', 'Public', 'https://www.nalsar.ac.in'],
+  ['WB National University of Juridical Sciences', 'India', 'Kolkata', 'Law', 'Dream', 'Public', 'https://www.nujs.edu'],
+  ['University College London Faculty of Laws', 'UK', 'London', 'Law', 'Dream', 'Public', 'https://www.ucl.ac.uk/laws'],
+  ['University of Toronto Faculty of Law', 'Canada', 'Toronto', 'Law', 'Dream', 'Public', 'https://www.law.utoronto.ca'],
+  ['University of Amsterdam Law School', 'Netherlands', 'Amsterdam', 'Law', 'Very Good', 'Public', 'https://www.uva.nl/en/about-the-uva/organisation/faculties/amsterdam-law-school'],
+  ['University of New South Wales Law', 'Australia', 'Sydney', 'Law', 'Very Good', 'Public', 'https://www.unsw.edu.au/law-justice'],
+  ['National University of Singapore Faculty of Law', 'Singapore', 'Singapore', 'Law', 'Dream', 'Public', 'https://law.nus.edu.sg'],
+  ['University of Hong Kong Faculty of Law', 'Hong Kong', 'Hong Kong', 'Law', 'Very Good', 'Public', 'https://www.law.hku.hk'],
+  ['National Institute of Design Ahmedabad', 'India', 'Ahmedabad', 'Design', 'Dream', 'Public', 'https://www.nid.edu'],
+  ['Srishti Manipal Institute', 'India', 'Bengaluru', 'Design', 'Very Good', 'Private', 'https://srishtimanipalinstitute.in'],
+  ['Rhode Island School of Design', 'USA', 'Providence', 'Design', 'Dream', 'Private', 'https://www.risd.edu'],
+  ['University of the Arts London', 'UK', 'London', 'Design', 'Dream', 'Public', 'https://www.arts.ac.uk'],
+  ['OCAD University', 'Canada', 'Toronto', 'Design', 'Very Good', 'Public', 'https://www.ocadu.ca'],
+  ['Design Academy Eindhoven', 'Netherlands', 'Eindhoven', 'Design', 'Very Good', 'Public', 'https://www.designacademy.nl'],
+  ['RMIT University', 'Australia', 'Melbourne', 'Design', 'Very Good', 'Public', 'https://www.rmit.edu.au'],
+  ['LASALLE College of the Arts', 'Singapore', 'Singapore', 'Design', 'Good', 'Public', 'https://www.lasalle.edu.sg'],
+  ['Hindu College', 'India', 'New Delhi', 'Arts', 'Very Good', 'Public', 'https://www.hinducollege.ac.in'],
+  ['St. Stephen’s College', 'India', 'New Delhi', 'Arts', 'Dream', 'Public', 'https://www.ststephens.edu'],
+  ['University of Chicago', 'USA', 'Chicago', 'Arts', 'Dream', 'Private', 'https://www.uchicago.edu'],
+  ['University of St Andrews', 'UK', 'St Andrews', 'Arts', 'Dream', 'Public', 'https://www.st-andrews.ac.uk'],
+  ['McGill University', 'Canada', 'Montreal', 'Arts', 'Very Good', 'Public', 'https://www.mcgill.ca'],
+  ['Freie Universität Berlin', 'Germany', 'Berlin', 'Arts', 'Very Good', 'Public', 'https://www.fu-berlin.de'],
+  ['University of Melbourne', 'Australia', 'Melbourne', 'Arts', 'Dream', 'Public', 'https://www.unimelb.edu.au'],
+  ['Waseda University', 'Japan', 'Tokyo', 'Arts', 'Very Good', 'Private', 'https://www.waseda.jp'],
+  ['Ashoka University', 'India', 'Sonipat', 'Other', 'Very Good', 'Private', 'https://www.ashoka.edu.in'],
+  ['University of Hyderabad', 'India', 'Hyderabad', 'Other', 'Very Good', 'Public', 'https://uohyd.ac.in'],
+  ['New York University', 'USA', 'New York', 'Other', 'Dream', 'Private', 'https://www.nyu.edu'],
+  ['University of Manchester', 'UK', 'Manchester', 'Other', 'Very Good', 'Public', 'https://www.manchester.ac.uk'],
+  ['University of Alberta', 'Canada', 'Edmonton', 'Other', 'Good', 'Public', 'https://www.ualberta.ca'],
+  ['Heidelberg University', 'Germany', 'Heidelberg', 'Other', 'Dream', 'Public', 'https://www.uni-heidelberg.de'],
+  ['University of Auckland', 'New Zealand', 'Auckland', 'Other', 'Very Good', 'Public', 'https://www.auckland.ac.nz'],
+  ['King Saud University', 'Saudi Arabia', 'Riyadh', 'Other', 'Good', 'Public', 'https://ksu.edu.sa'],
+];
+
+const examsFor = (country: string, stream: Stream): string[] => {
+  if (country === 'India') {
+    if (stream === 'Engineering') return ['JEE Main', 'JEE Advanced'];
+    if (stream === 'Medical') return ['NEET'];
+    if (stream === 'Law') return ['CLAT'];
+    if (stream === 'Design') return ['NID DAT', 'UCEED'];
+    return ['CUET'];
+  }
+  if (country === 'UK') return ['A-Levels/IB', 'IELTS/TOEFL'];
+  if (country === 'Germany') return ['Abitur/IB', 'TestAS', 'German/IELTS'];
+  if (country === 'Australia' || country === 'Canada') return ['High School Diploma', 'IELTS/TOEFL'];
+  return ['SAT/ACT or equivalent', 'IELTS/TOEFL'];
+};
+
+const tuitionFor = (country: string): string => {
+  const ranges: Record<string, string> = {
+    India: '₹1–8 lakh/year', USA: '$35,000–70,000/year', UK: '£20,000–45,000/year',
+    Canada: 'CAD 25,000–60,000/year', Germany: '€0–6,000/year', Australia: 'AUD 30,000–55,000/year',
+    Singapore: 'SGD 20,000–50,000/year', Netherlands: '€10,000–25,000/year', Italy: '€4,000–22,000/year',
+    UAE: 'AED 50,000–110,000/year', Qatar: 'QAR 70,000–180,000/year', 'Saudi Arabia': 'SAR 15,000–60,000/year',
+  };
+  return ranges[country] || '$10,000–45,000/year';
+};
+
+const supplementalUniversities: UniversitySeed[] = supplementalSeeds.map(
+  ([name, country, city, stream, category, publicOrPrivate, officialWebsite]) => ({
+    name,
+    country,
+    city,
+    stream,
+    category,
+    requiredExams: examsFor(country, stream),
+    tuitionRange: tuitionFor(country),
+    scholarshipAvailability: true,
+    oneLineDescription: `${category} ${stream.toLowerCase()} option in ${city} with strong academic and career opportunities.`,
+    publicOrPrivate,
+    officialWebsite,
+  }),
+);
+
+const privateNamePattern = /BITS|Manipal|Stanford|Harvard|MIT|Carnegie|Ashoka|University of Chicago|New York University/i;
+
+const programsByStream: Record<Stream, string[]> = {
+  Engineering: ['Computer Science and Engineering', 'Mechanical Engineering', 'Electrical and Electronics Engineering', 'Civil or related engineering programmes'],
+  Medical: ['Medicine and clinical sciences', 'Biomedical or life sciences', 'Public health and allied health programmes'],
+  Commerce: ['Commerce and accounting', 'Economics and finance', 'Business and management'],
+  Law: ['Undergraduate law', 'Corporate and commercial law', 'Public policy and legal studies'],
+  Design: ['Communication and visual design', 'Product or industrial design', 'Interaction and experience design'],
+  Arts: ['Humanities and social sciences', 'Languages and literature', 'History, politics, psychology, or related disciplines'],
+  Other: ['Interdisciplinary undergraduate programmes', 'Sciences and social sciences', 'Programme options vary by faculty'],
+};
+
+const subjectsByStream: Record<Stream, string[]> = {
+  Engineering: ['Mathematics', 'Physics', 'Chemistry or Computer Science where required'],
+  Medical: ['Biology', 'Chemistry', 'Physics where required'],
+  Commerce: ['Mathematics or Accountancy where required', 'Economics or Business Studies', 'English'],
+  Law: ['English', 'Humanities or social-science subjects', 'No single subject combination applies to every programme'],
+  Design: ['Art or Design where required', 'English', 'Portfolio preparation'],
+  Arts: ['English', 'Relevant humanities or social-science subjects'],
+  Other: ['Programme-specific secondary-school subjects'],
+};
+
+const outcomesByStream: Record<Stream, string[]> = {
+  Engineering: ['Engineering and technology roles', 'Research or postgraduate study', 'Product, consulting, and technical entrepreneurship'],
+  Medical: ['Clinical or allied-health pathways subject to licensing', 'Biomedical research', 'Public-health and postgraduate study'],
+  Commerce: ['Finance, accounting, consulting, and analytics', 'Business and entrepreneurship', 'Postgraduate management or research'],
+  Law: ['Legal practice subject to local qualification rules', 'Policy, compliance, and corporate roles', 'Research and postgraduate law'],
+  Design: ['Product, visual, interaction, and service design', 'Creative industries', 'Independent practice or postgraduate study'],
+  Arts: ['Education, media, policy, research, and public service', 'Creative and cultural sectors', 'Postgraduate study'],
+  Other: ['Graduate roles related to the selected programme', 'Research or postgraduate study', 'Interdisciplinary careers'],
+};
+
+const livingCostFor = (country: string): string => {
+  if (country === 'India') return 'Approximately ₹1.5–6 lakh/year depending on city and accommodation.';
+  if (country === 'Germany') return 'Approximately €11,000–16,000/year depending on city and lifestyle.';
+  if (country === 'UK') return 'Approximately £12,000–20,000/year; London is often higher.';
+  if (country === 'USA') return 'Approximately $15,000–30,000/year depending on location and housing.';
+  if (country === 'Canada') return 'Approximately CAD 15,000–25,000/year depending on city.';
+  if (country === 'Australia') return 'Approximately AUD 24,000–35,000/year depending on city.';
+  return 'Living costs vary significantly by city and accommodation; verify the university’s current estimate.';
+};
+
+export const universities: University[] = [...baseUniversities, ...supplementalUniversities]
+  .filter((university, index, all) =>
+    all.findIndex((candidate) => candidate.name.toLowerCase() === university.name.toLowerCase()) === index,
+  )
+  .map((university, index) => ({
+  ...university,
+  id: `university-${index + 1}`,
+  publicOrPrivate: university.publicOrPrivate || (privateNamePattern.test(university.name) ? 'Private' : 'Public'),
+  studyAbroad: university.country !== 'India',
+  officialWebsite: university.officialWebsite || '',
+  detailedOverview: `${university.name} is a ${university.publicOrPrivate || (privateNamePattern.test(university.name) ? 'private' : 'public')} institution in ${university.city}, ${university.country}. It offers ${university.stream.toLowerCase()} and related study pathways. Programme availability, admissions rules, and costs can change, so confirm current details directly with the institution.`,
+  relevantPrograms: programsByStream[university.stream],
+  requiredSubjects: subjectsByStream[university.stream],
+  eligibility: `Completion of the relevant secondary or prior degree qualification, required subjects, language requirements, and applicable entrance examinations. Exact thresholds vary by programme; verify on the official website.`,
+  livingCostEstimate: livingCostFor(university.country),
+  campusLocationInfo: `Located in ${university.city}, ${university.country}. Review the official campus, accommodation, transport, and international-student pages when comparing locations.`,
+  careerOutcomes: outcomesByStream[university.stream],
+  suggestedNextSteps: ['Review the official programme curriculum', 'Confirm subject and entrance-exam requirements', 'Compare tuition, living costs, and scholarship options', 'Note the official application timeline and required documents'],
+  }));
 
 /**
  * Get universities by stream

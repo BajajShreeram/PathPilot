@@ -12,6 +12,11 @@ import {
   ScholarshipsPage,
   DeadlinesPage,
   ProfileTestPage,
+  ProfilePage,
+  LoginPage,
+  AchievementsPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
 } from './pages';
 
 /**
@@ -26,6 +31,13 @@ const router = createBrowserRouter([
     path: '/onboarding',
     element: <OnboardingPage />,
   },
+  {
+    path: '/login',
+    element: <LoginPage />,
+  },
+  { path: '/signup', element: <LoginPage /> },
+  { path: '/forgot-password', element: <ForgotPasswordPage /> },
+  { path: '/reset-password', element: <ResetPasswordPage /> },
   {
     path: '/profile-test',
     element: <ProfileTestPage />,
@@ -57,6 +69,14 @@ const router = createBrowserRouter([
       {
         path: 'deadlines',
         element: <DeadlinesPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: 'achievements',
+        element: <AchievementsPage />,
       },
       {
         path: 'app',

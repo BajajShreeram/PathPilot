@@ -3,7 +3,6 @@ import {
   Navbar,
   Hero,
   Features,
-  AIMentor,
   DreamTimeline,
   DashboardPreview,
   CallToAction,
@@ -20,7 +19,6 @@ const LandingPage: React.FC = () => {
       <Navbar />
       <Hero />
       <Features />
-      <AIMentor />
       <DreamTimeline />
       <DashboardPreview />
       <CallToAction />
