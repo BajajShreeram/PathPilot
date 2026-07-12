@@ -59,7 +59,7 @@ const Hero: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
             <Button
               size="lg"
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/login')}
               className="text-xl w-full sm:w-auto"
             >
               Start Your Journey →

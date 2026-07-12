@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useLocation, Outlet } from 'react-router-dom';
+import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { signOut } from '../utils/authSession';
 
 /**
  * MainLayout - ChatGPT-style layout with collapsible sidebar
@@ -8,6 +9,7 @@ import { Link, useLocation, Outlet } from 'react-router-dom';
  */
 const MainLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -23,6 +25,12 @@ const MainLayout = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+  const handleSignOut = () => {
+    if (window.confirm('Sign out of PathPilot? Your saved profile and progress will remain on this device.')) {
+      signOut();
+      navigate('/login', { replace: true });
+    }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30">
@@ -78,6 +86,10 @@ const MainLayout = () => {
             );
           })}
         </nav>
+
+        <div className="border-t border-gray-100 p-3">
+          <button onClick={handleSignOut} className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-red-600 hover:bg-red-50 ${isSidebarCollapsed ? 'justify-center' : ''}`} title="Sign Out"><span>↪</span>{!isSidebarCollapsed && <span className="text-sm font-medium">Sign Out</span>}</button>
+        </div>
 
         {/* Collapse Button */}
         <div className="p-3 border-t border-gray-100">
@@ -190,6 +202,7 @@ const MainLayout = () => {
             );
           })}
         </nav>
+        <div className="border-t border-gray-100 p-3"><button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-red-600 hover:bg-red-50"><span>↪</span><span className="text-sm font-medium">Sign Out</span></button></div>
       </aside>
 
       {/* Main Content Area - Flexbox automatically calculates width */}

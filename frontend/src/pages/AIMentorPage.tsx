@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getAIMentorResponse } from '../services/meshApi';
 
 interface Message {
   id: string;
@@ -131,7 +132,7 @@ I can help you:
 What would you like to work on today?`;
   };
 
-  const handleSendMessage = (message: string) => {
+  const handleSendMessage = async (message: string) => {
     if (!message.trim()) return;
 
     const userMessage: Message = {
@@ -145,42 +146,33 @@ What would you like to work on today?`;
     setInputValue('');
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      // Call the real Mesh API
+      const aiResponse = await getAIMentorResponse(message, profile || undefined);
+
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: getDemoResponse(message),
+        content: aiResponse,
         timestamp: new Date(),
       };
+      
       setMessages((prev) => [...prev, aiMessage]);
+    } catch (err) {
+      console.error('Error getting AI response:', err);
+      
+      // Show error message in chat
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "Sorry, I couldn't generate a response. Please try again.",
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsTyping(false);
-    }, 1000);
-  };
-
-  const getDemoResponse = (prompt: string): string => {
-    const lowerPrompt = prompt.toLowerCase();
-    
-    if (lowerPrompt.includes('next') || lowerPrompt.includes('should i do')) {
-      return "Based on your profile, I recommend focusing on these key areas:\n\n1. **Strengthen Your Foundation** - Focus on core subjects related to your stream\n2. **Entrance Exam Prep** - Start preparing for your target exams\n3. **Research Universities** - Explore universities that match your interests\n4. **Build Your Profile** - Engage in extracurricular activities and projects\n\nWould you like me to create a detailed action plan for any of these areas?";
     }
-    
-    if (lowerPrompt.includes('universit')) {
-      return "Here are some universities that match your profile:\n\n🎓 **Top Recommendations:**\n\n1. **MIT** - Strong engineering programs, research opportunities\n2. **Stanford University** - Innovation-focused, entrepreneurship culture\n3. **UC Berkeley** - Excellent computer science, diverse campus\n4. **Carnegie Mellon** - Top-tier tech programs, industry connections\n\nThese universities align with your academic interests and career goals. Would you like more details about any specific university?";
-    }
-    
-    if (lowerPrompt.includes('exam') || lowerPrompt.includes('prepare')) {
-      return "Here's a comprehensive exam preparation strategy:\n\n📚 **Preparation Plan:**\n\n**Phase 1: Foundation (3 months)**\n- Review all core concepts\n- Identify weak areas\n- Build strong fundamentals\n\n**Phase 2: Practice (2 months)**\n- Solve previous year papers\n- Take mock tests weekly\n- Analyze mistakes\n\n**Phase 3: Revision (1 month)**\n- Quick revision notes\n- Focus on high-weightage topics\n- Maintain confidence\n\nWould you like a detailed study schedule for any specific exam?";
-    }
-    
-    if (lowerPrompt.includes('scholarship')) {
-      return "Here are scholarship opportunities you should consider:\n\n💰 **Top Scholarships:**\n\n1. **Merit-Based Scholarships**\n   - Full tuition coverage for top performers\n   - GPA requirement: 3.8+\n\n2. **Need-Based Financial Aid**\n   - Based on family income\n   - Can cover 50-100% of costs\n\n3. **Subject-Specific Grants**\n   - STEM scholarships available\n   - Research opportunities included\n\n4. **International Student Scholarships**\n   - For students studying abroad\n   - Varies by country and university\n\nI can help you find scholarships that match your profile. Would you like me to search for specific ones?";
-    }
-    
-    if (lowerPrompt.includes('study plan') || lowerPrompt.includes('7-day')) {
-      return "Here's your personalized 7-day study plan:\n\n📅 **Week Study Plan:**\n\n**Day 1-2:** Mathematics & Problem Solving\n- 3 hours: Core concepts\n- 2 hours: Practice problems\n- 1 hour: Review\n\n**Day 3-4:** Science/Technical Subjects\n- 3 hours: Theory and applications\n- 2 hours: Lab work/practice\n- 1 hour: Revision\n\n**Day 5-6:** Language & Reasoning\n- 2 hours: Reading comprehension\n- 2 hours: Analytical reasoning\n- 2 hours: Practice tests\n\n**Day 7:** Mock Test & Review\n- Full-length practice test\n- Analyze performance\n- Plan next week\n\nWould you like me to customize this plan based on specific exams or subjects?";
-    }
-    
-    return "Thank you for your question! I'm here to help you with:\n\n✨ Career guidance and planning\n🎓 University recommendations\n📚 Study strategies and exam prep\n💰 Scholarship opportunities\n🗺️ Personalized roadmaps\n\nFeel free to ask me anything about your educational journey. How can I assist you today?";
   };
 
   const handleSuggestedPrompt = (prompt: string) => {

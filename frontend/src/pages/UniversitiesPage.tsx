@@ -242,6 +242,8 @@ export const UniversitiesPage: React.FC = () => {
     }
   };
 
+  const countryFlag = (country: string) => ({ India: '🇮🇳', USA: '🇺🇸', UK: '🇬🇧', Canada: '🇨🇦', Australia: '🇦🇺', Germany: '🇩🇪', Singapore: '🇸🇬', France: '🇫🇷', Netherlands: '🇳🇱' }[country] || '🌍');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
@@ -377,8 +379,8 @@ export const UniversitiesPage: React.FC = () => {
         {/* Modal */}
         {showModal && selectedUniversity && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-              <div className={`h-32 bg-gradient-to-r ${getCategoryColor(selectedUniversity.category)} relative`}>
+            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl">
+              <div className={`h-28 bg-gradient-to-r ${getCategoryColor(selectedUniversity.category)} relative`}>
                 <button
                   onClick={closeModal}
                   className="absolute top-4 right-4 text-white hover:text-gray-200 transition"
@@ -394,35 +396,14 @@ export const UniversitiesPage: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              <div className="p-8">
-                <div className="mb-4">
-                  <span
-                    className={`inline-block px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${getCategoryColor(selectedUniversity.category)}`}
-                  >
-                    {selectedUniversity.category}
-                  </span>
-                </div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedUniversity.name}</h2>
-                <p className="text-gray-600 mb-6">{selectedUniversity.oneLineDescription}</p>
+              <div className="p-5 sm:p-8">
+                <div className="-mt-12 mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div className="min-w-0"><div className="mb-3 flex flex-wrap gap-2"><span className="rounded-full bg-white px-3 py-1.5 text-sm font-bold text-gray-900 shadow">{countryFlag(selectedUniversity.country)} {selectedUniversity.city}, {selectedUniversity.country}</span><span className={`rounded-full bg-gradient-to-r ${getCategoryColor(selectedUniversity.category)} px-3 py-1.5 text-sm font-bold text-white shadow`}>Ranking tier: {selectedUniversity.category}</span></div><h2 className="break-words text-3xl font-bold text-gray-900 sm:text-4xl">{selectedUniversity.name}</h2></div><span className="rounded-xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">🎓 {selectedUniversity.stream}</span></div>
+                <p className="mb-6 text-gray-600">{selectedUniversity.oneLineDescription}</p>
 
-                <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Country</p>
-                    <p className="text-lg text-gray-900">{selectedUniversity.country}</p>
-                  </div>
+                <div className="mb-6 rounded-2xl border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 p-5"><p className="font-bold text-gray-900">✨ Why this matches you</p><ul className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2"><li>✓ {profile?.stream === selectedUniversity.stream ? `Matches your ${selectedUniversity.stream} stream` : `Offers ${selectedUniversity.stream.toLowerCase()} pathways`}</li><li>✓ {profile?.needScholarships && selectedUniversity.scholarshipAvailability ? 'Scholarship options are available' : 'Explore current eligibility'}</li></ul></div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Stream</p>
-                    <p className="text-lg text-gray-900">{selectedUniversity.stream}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Tuition Range</p>
-                    <p className="text-lg text-gray-900">{selectedUniversity.tuitionRange}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Required Exams</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">📚 Requirements</p><p className="mt-3 text-sm font-semibold text-gray-600">Entrance exams</p>
                     <div className="flex flex-wrap gap-2">
                       {Array.isArray(selectedUniversity.requiredExams) && selectedUniversity.requiredExams.map((exam, idx) => (
                         <span
@@ -433,8 +414,14 @@ export const UniversitiesPage: React.FC = () => {
                         </span>
                       ))}
                     </div>
-                  </div>
+                    <ul className="mt-4 space-y-2 text-sm text-gray-700"><li>• {selectedUniversity.stream === 'Engineering' ? 'Mathematics and Physics are commonly expected.' : selectedUniversity.stream === 'Medical' ? 'Biology, Chemistry, and Physics are commonly expected.' : `Verify ${selectedUniversity.stream} programme prerequisites.`}</li><li>• Meet current academic and programme eligibility requirements.</li></ul></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">💳 Estimated costs</p><div className="mt-3 grid grid-cols-2 gap-3"><div className="rounded-xl bg-white p-3"><p className="text-xs font-semibold text-gray-500">TUITION</p><p className="mt-1 font-bold text-gray-900">{selectedUniversity.tuitionRange}</p></div><div className="rounded-xl bg-white p-3"><p className="text-xs font-semibold text-gray-500">LIVING</p><p className="mt-1 text-sm font-semibold text-gray-900">Verify by city</p></div></div><p className="mt-3 text-sm text-gray-700">Housing, food, transport, and personal costs vary by campus and lifestyle.</p></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">🏫 Programmes & support</p><ul className="mt-3 space-y-2 text-sm text-gray-700"><li>• {selectedUniversity.stream === 'Engineering' ? 'Engineering, technology, and research pathways.' : selectedUniversity.stream === 'Medical' ? 'Medicine, healthcare, and research pathways.' : `${selectedUniversity.stream} programmes and related options.`}</li><li>• {selectedUniversity.scholarshipAvailability ? 'Scholarship and financial-aid options may be available.' : 'Verify current financial-aid options directly.'}</li></ul></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">🚀 Career outcomes</p><div className="mt-3 flex flex-wrap gap-2"><span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">Internships</span><span className="rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-700">Further study</span><span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">{selectedUniversity.stream} roles</span></div></section>
                 </div>
+
+                <div className="mt-5 rounded-2xl border border-blue-100 bg-blue-50 p-5"><p className="font-bold text-gray-900">✅ Next Steps</p><ul className="mt-3 space-y-2 text-sm text-gray-700"><li>□ Compare programme prerequisites.</li><li>□ Prepare for the required entrance exams.</li><li>□ Verify application deadlines on the official website.</li></ul></div>
+                <a href={`https://www.google.com/search?q=${encodeURIComponent(`${selectedUniversity.name} official website`)}`} target="_blank" rel="noreferrer" className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 font-semibold text-white sm:w-auto">Visit Official Website ↗</a>
 
                 <button
                   onClick={closeModal}

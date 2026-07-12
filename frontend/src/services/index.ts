@@ -1,2 +1,2 @@
-// Placeholder for service layer (API calls, external integrations)
-export {};
+// Service layer for API calls and external integrations
+export * from './meshApi';

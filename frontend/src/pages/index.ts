@@ -11,3 +11,4 @@ export { DeadlinesPage } from './DeadlinesPage';
 export { ProfileTestPage } from './ProfileTestPage';
 export { ProfilePage } from './ProfilePage';
 export { AchievementsPage } from './AchievementsPage';
+export { LoginPage } from './LoginPage';

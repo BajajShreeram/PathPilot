@@ -69,10 +69,10 @@ const Navbar: React.FC = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="secondary" size="sm" onClick={() => navigate('/dashboard')}>
+            <Button variant="secondary" size="sm" onClick={() => navigate('/login')}>
               Sign In
             </Button>
-            <Button variant="primary" size="sm" onClick={() => navigate('/onboarding')}>
+            <Button variant="primary" size="sm" onClick={() => navigate('/login')}>
               Get Started
             </Button>
           </div>
@@ -123,10 +123,10 @@ const Navbar: React.FC = () => {
                 </a>
               ))}
               <div className="flex flex-col space-y-2 pt-4 border-t border-gray-200">
-                <Button variant="secondary" size="sm" className="w-full" onClick={() => navigate('/dashboard')}>
+                <Button variant="secondary" size="sm" className="w-full" onClick={() => navigate('/login')}>
                   Sign In
                 </Button>
-                <Button variant="primary" size="sm" className="w-full" onClick={() => navigate('/onboarding')}>
+                <Button variant="primary" size="sm" className="w-full" onClick={() => navigate('/login')}>
                   Get Started
                 </Button>
               </div>

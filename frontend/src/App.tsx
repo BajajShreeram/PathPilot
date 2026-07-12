@@ -14,6 +14,7 @@ import {
   ProfileTestPage,
   ProfilePage,
   AchievementsPage,
+  LoginPage,
 } from './pages';
 
 /**
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
   {
     path: '/onboarding',
     element: <OnboardingPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
   },
   {
     path: '/profile-test',

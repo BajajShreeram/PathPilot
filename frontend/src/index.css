@@ -11,6 +11,12 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-width: 320px;
+  color: #111827;
+}
+
+#root {
+  min-height: 100vh;
 }
 
 /* Custom Animations */
@@ -236,8 +242,24 @@ html {
 }
 
 /* Smooth transitions for interactive elements */
-a, button {
+a, button, input, select, textarea {
   transition: all 0.3s ease;
+}
+
+button, [role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+input, select, textarea {
+  max-width: 100%;
+}
+
+textarea {
+  resize: vertical;
 }
 
 /* Focus styles for accessibility */
@@ -329,6 +351,10 @@ p {
   
   h3 {
     font-size: 1.5rem;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
   }
 }
 

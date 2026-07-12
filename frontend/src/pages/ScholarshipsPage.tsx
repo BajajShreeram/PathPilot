@@ -133,8 +133,8 @@ export const ScholarshipsPage: React.FC = () => {
       const personalized = getPersonalizedScholarships(stream, budget, needScholarships, isAbroad);
       const safePersonalized = Array.isArray(personalized) ? personalized : [];
       setFilteredScholarships(safePersonalized.length > 0 ? safePersonalized : []);
-    } catch (error) {
-      console.error('Failed to get personalized scholarships:', error);
+    } catch (err) {
+      console.error('Failed to get personalized scholarships:', err);
       // Fallback to stream-based scholarships
       const safeScholarships = Array.isArray(scholarships) ? scholarships : [];
       const streamScholarships = safeScholarships.filter((s) => s && s.stream === stream);
@@ -174,6 +174,7 @@ export const ScholarshipsPage: React.FC = () => {
     const colors: (keyof typeof colorClasses)[] = ['blue', 'purple', 'green', 'yellow', 'red', 'indigo'];
     return colors[index % colors.length];
   };
+  const countryFlag = (country: string) => ({ India: '🇮🇳', USA: '🇺🇸', UK: '🇬🇧', Canada: '🇨🇦', Australia: '🇦🇺', Germany: '🇩🇪', Singapore: '🇸🇬' }[country] || '🌍');
 
   // Safe array handling for filtered scholarships
   const safeFilteredScholarships = Array.isArray(filteredScholarships) ? filteredScholarships : [];
@@ -284,7 +285,7 @@ export const ScholarshipsPage: React.FC = () => {
         {/* Modal */}
         {showModal && selectedScholarship && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl">
               <div className={`h-32 bg-gradient-to-r ${colorClasses[getColorForIndex(0)]} relative`}>
                 <button
                   onClick={closeModal}
@@ -301,47 +302,22 @@ export const ScholarshipsPage: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              <div className="p-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-4">{selectedScholarship.name}</h2>
+              <div className="p-5 sm:p-8">
+                <div className="-mt-12 mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><div className="mb-3 flex flex-wrap gap-2"><span className="rounded-full bg-white px-3 py-1.5 text-sm font-bold text-gray-900 shadow">{countryFlag(selectedScholarship.country)} {selectedScholarship.country}</span><span className="rounded-full bg-gradient-to-r from-purple-500 to-blue-600 px-3 py-1.5 text-sm font-bold text-white shadow">Award tier: {selectedScholarship.type}</span></div><h2 className="break-words text-3xl font-bold text-gray-900 sm:text-4xl">{selectedScholarship.name}</h2></div><span className="rounded-xl bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700">💰 {selectedScholarship.stream}</span></div>
                 <p className="text-gray-600 mb-6">{selectedScholarship.description}</p>
 
-                <div className="space-y-4">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Amount</p>
-                    <p className="text-lg text-gray-900">{selectedScholarship.amount}</p>
-                  </div>
+                <div className="mb-6 rounded-2xl border border-purple-200 bg-gradient-to-r from-purple-50 to-blue-50 p-5"><p className="font-bold text-gray-900">✨ Why this matches you</p><ul className="mt-3 grid gap-2 text-sm text-gray-700 sm:grid-cols-2"><li>✓ {profile?.stream === selectedScholarship.stream || selectedScholarship.stream === 'General' ? `Relevant to your ${profile?.stream || selectedScholarship.stream} pathway` : `Potential ${selectedScholarship.stream.toLowerCase()} opportunity`}</li><li>✓ {profile?.needScholarships ? 'Matches your scholarship need' : 'Review eligibility for your situation'}</li></ul></div>
 
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Deadline</p>
-                    <p className="text-lg text-gray-900">{formatDate(selectedScholarship.deadline)}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Eligibility Requirements</p>
-                    <p className="text-lg text-gray-900">{selectedScholarship.eligibility}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Type</p>
-                    <p className="text-lg text-gray-900">{selectedScholarship.type}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Stream</p>
-                    <p className="text-lg text-gray-900">{selectedScholarship.stream}</p>
-                  </div>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-semibold text-gray-700 mb-1">Country</p>
-                    <p className="text-lg text-gray-900">{selectedScholarship.country}</p>
-                  </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">💳 Award summary</p><div className="mt-3 grid grid-cols-2 gap-3"><div className="rounded-xl bg-white p-3"><p className="text-xs font-semibold text-gray-500">COVERAGE</p><p className="mt-1 font-bold text-gray-900">{selectedScholarship.amount}</p></div><div className="rounded-xl bg-white p-3"><p className="text-xs font-semibold text-gray-500">DEADLINE</p><p className="mt-1 text-sm font-bold text-gray-900">{formatDate(selectedScholarship.deadline)}</p></div></div><p className="mt-3 text-sm text-gray-700">🏢 Provider details and exact coverage vary by annual award cycle.</p></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">📋 Eligibility</p><ul className="mt-3 space-y-2 text-sm text-gray-700"><li>• {selectedScholarship.eligibility}</li><li>• Stream: {selectedScholarship.stream}</li><li>• Country: {selectedScholarship.country}</li></ul></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">📎 Documents</p><div className="mt-3 flex flex-wrap gap-2"><span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">Academic records</span><span className="rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-700">ID proof</span><span className="rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">Eligibility evidence</span></div></section>
+                  <section className="rounded-2xl border border-gray-100 bg-gray-50 p-5"><p className="font-bold text-gray-900">🔁 Application & renewal</p><ul className="mt-3 space-y-2 text-sm text-gray-700"><li>• Submit through the provider’s official portal.</li><li>• Track updates directly with the provider.</li><li>• Renewal, when offered, usually requires satisfactory progress.</li></ul></section>
                 </div>
 
                 <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
-                  <p className="text-sm text-gray-700">
-                    <strong>💡 Next Steps:</strong> Visit the official scholarship website to complete your application.
-                    Make sure to prepare all required documents before the deadline!
-                  </p>
+                  <p className="text-sm text-gray-700"><strong>Important:</strong> PathPilot does not process applications. Verify details on the official website.</p>
+                  <a href={`https://www.google.com/search?q=${encodeURIComponent(`${selectedScholarship.name} official website`)}`} target="_blank" rel="noreferrer" className="mt-3 inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 text-sm font-semibold text-white sm:w-auto">Visit Official Website ↗</a>
                 </div>
 
                 <button
@@ -358,3 +334,4 @@ export const ScholarshipsPage: React.FC = () => {
     </div>
   );
 };
+

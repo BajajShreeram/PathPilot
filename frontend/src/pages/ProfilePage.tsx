@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import type { ProfileData } from '../types';
 import { getStoredProfile, saveProfile } from '../utils/profileValidation';
+import { signOut } from '../utils/authSession';
 
 const listFields: Array<{ key: 'favouriteSubjects' | 'subjectInterests' | 'strongSubjects' | 'weakSubjects' | 'careerInterests'; label: string }> = [
   { key: 'favouriteSubjects', label: 'Favourite Subjects' },
@@ -52,7 +53,7 @@ export const ProfilePage = () => {
           </div>
           {editing && <div className="mt-8 flex justify-end"><button className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg">Save Changes</button></div>}
         </form>
-        <div className="mt-8 flex flex-wrap gap-4"><button onClick={() => navigate('/achievements')} className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 font-semibold text-white">Manage Achievements</button><button onClick={() => navigate('/onboarding')} className="rounded-xl border border-gray-200 bg-white px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50">Redo Onboarding</button></div>
+        <div className="mt-8 flex flex-wrap gap-4"><button onClick={() => navigate('/achievements')} className="rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 px-5 py-3 font-semibold text-white">Manage Achievements</button><button onClick={() => navigate('/onboarding')} className="rounded-xl border border-gray-200 bg-white px-5 py-3 font-semibold text-gray-700 hover:bg-gray-50">Redo Onboarding</button><button onClick={() => { if (window.confirm('Sign out of PathPilot? Your saved profile and progress will remain on this device.')) { signOut(); navigate('/login', { replace: true }); } }} className="rounded-xl border border-red-200 bg-white px-5 py-3 font-semibold text-red-700 hover:bg-red-50">Sign Out</button></div>
       </div>
     </div>
   );

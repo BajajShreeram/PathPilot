@@ -19,6 +19,11 @@ export interface Achievement {
   result: string;
   skillsGained: string[];
   proofLink: string;
+  proofFileName: string | null;
+  proofFileType: string | null;
+  proofFileSize: number | null;
+  proofPreviewUrl: string | null;
+  proofStorageUrl: string | null;
 }
 
 const STORAGE_KEY = 'pathpilot_achievements';

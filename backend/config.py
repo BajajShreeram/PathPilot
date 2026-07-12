@@ -20,24 +20,36 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
 
-    # CORS Origins
-    CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://localhost:3000",
-    ]
+    # Frontend URL for CORS (deployed frontend)
+    FRONTEND_URL: str = ""
 
     # Supabase Configuration (will be added when integrating)
     SUPABASE_URL: str = ""
     SUPABASE_KEY: str = ""
     SUPABASE_JWT_SECRET: str = ""
 
-    # Mesh API Configuration (will be added when integrating)
+    # Mesh API Configuration
     MESH_API_KEY: str = ""
-    MESH_API_URL: str = ""
+    MESH_MODEL: str = "openai/gpt-4o"
+    MESH_API_URL: str = "https://api.meshapi.ai/v1/chat/completions"
 
     class Config:
         env_file = ".env"
         case_sensitive = True
+    
+    @property
+    def cors_origins(self) -> List[str]:
+        """Get CORS origins including environment-based frontend URL"""
+        origins = [
+            "http://localhost:5173",  # Local Vite dev
+            "http://localhost:3000",  # Alternative local port
+        ]
+        
+        # Add deployed frontend URL if configured
+        if self.FRONTEND_URL:
+            origins.append(self.FRONTEND_URL)
+        
+        return origins
 
 
 # Create global settings instance
