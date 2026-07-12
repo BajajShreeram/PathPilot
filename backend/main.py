@@ -6,7 +6,6 @@ Main application entry point
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.health import router as health_router
-from api.mentor import router as mentor_router
 
 app = FastAPI(
     title="PathPilot API",
@@ -21,10 +20,9 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",  # Vite dev server
-        "http://127.0.0.1:5173",  # Vite dev server via loopback IP
         "http://localhost:3000",  # Alternative port
+        "https://*.vercel.app",   # Vercel deployments
     ],
-    allow_origin_regex=r"https://[a-zA-Z0-9-]+\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,7 +30,6 @@ app.add_middleware(
 
 # Register routes
 app.include_router(health_router, prefix="/api", tags=["Health"])
-app.include_router(mentor_router, prefix="/api", tags=["AI Mentor"])
 
 # Future route registrations:
 # app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])

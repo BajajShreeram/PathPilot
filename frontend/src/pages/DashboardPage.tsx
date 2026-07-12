@@ -7,9 +7,6 @@ import {
   getMissingFields,
   needsScholarships,
 } from '../utils/profileValidation';
-import { getProfile } from '../utils/profileStorage';
-import { getAchievements, getAchievementSummary } from '../utils/achievementsStorage';
-import { getProfileCompletion } from '../utils/profileCompletion';
 
 const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
@@ -61,13 +58,6 @@ const QUICK_ACTIONS = [
     path: '/deadlines',
     gradient: 'from-red-500 to-pink-600',
   },
-  {
-    title: 'Achievements',
-    description: 'Build and manage your student profile',
-    icon: '🏆',
-    path: '/achievements',
-    gradient: 'from-indigo-500 to-purple-700',
-  },
 ];
 
 export const DashboardPage: React.FC = () => {
@@ -78,12 +68,12 @@ export const DashboardPage: React.FC = () => {
     completionPercentage: 0,
     missingFields: [] as string[],
   });
-  const [achievementSummary] = useState(() => getAchievementSummary(getAchievements()));
 
   useEffect(() => {
-    const parsedProfile = getProfile();
-    if (parsedProfile) {
+    const storedProfile = localStorage.getItem('pathpilot_profile');
+    if (storedProfile) {
       try {
+        const parsedProfile = JSON.parse(storedProfile);
         setProfile(parsedProfile);
 
         setProfileStatus({
@@ -110,11 +100,10 @@ export const DashboardPage: React.FC = () => {
   
   const subjectsRaw = getProfileValue(profile, 'favouriteSubjects', 'subjects', []);
   const safeSubjects = Array.isArray(subjectsRaw) ? subjectsRaw : [];
-  const completion = profile ? getProfileCompletion(profile, achievementSummary.total) : null;
 
   return (
-    <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 py-10 lg:py-16">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         
         {/* Profile Completion Alert */}
         {!profileStatus.isComplete && profile && (
@@ -198,21 +187,9 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
 
-        {/* Profile Completion */}
-        {completion && completion.percentage < 100 && (
-          <div className="mb-14 animate-fadeInUp">
-            <div className="bg-white rounded-3xl shadow-lg p-8 border border-slate-200">
-              <div className="flex items-start justify-between gap-4"><div><h2 className="text-2xl font-bold text-gray-900">Profile Completion</h2><p className="text-gray-600 mt-2">Complete your profile to receive more accurate university and scholarship recommendations.</p></div><p className="text-4xl font-bold text-blue-600">{completion.percentage}%</p></div>
-              <div className="w-full bg-gray-200 rounded-full h-4 mt-6 shadow-inner"><div className="bg-gradient-to-r from-blue-600 to-purple-600 h-4 rounded-full transition-all duration-500" style={{width:`${completion.percentage}%`}} /></div>
-              <p className="text-sm text-gray-600 mt-4">Remaining: {completion.missing.slice(0, 4).map((item) => item.label).join(', ')}{completion.missing.length > 4 ? ` +${completion.missing.length - 4} more` : ''}</p>
-              <div className="mt-6 flex flex-wrap gap-3"><button onClick={()=>navigate('/profile')} className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg">Complete Profile</button><button onClick={()=>navigate('/profile#missing-items')} className="px-6 py-3 bg-white text-blue-700 border border-blue-200 rounded-xl font-semibold">View Missing Items</button></div>
-            </div>
-          </div>
-        )}
-
         {/* Welcome Header */}
-        <div className="mb-14 animate-fadeInUp">
-          <div className="bg-white rounded-3xl shadow-lg p-8 lg:p-12 border border-slate-200">
+        <div className="mb-10 animate-fadeInUp">
+          <div className="bg-white rounded-3xl shadow-xl p-8 lg:p-12 border border-gray-100">
             <div className="flex items-center gap-6 mb-8">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center text-white text-4xl shadow-xl">
                 👋
@@ -226,7 +203,7 @@ export const DashboardPage: React.FC = () => {
             </div>
             
             {/* Profile Information Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl p-6 border border-blue-200/50">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-3xl">📚</span>
@@ -263,14 +240,14 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-14 animate-fadeInUp animation-delay-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-7">
+        <div className="mb-10 animate-fadeInUp animation-delay-200">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {QUICK_ACTIONS.map((action) => (
               <button
                 key={action.path}
                 onClick={() => navigate(action.path)}
-                className="group relative bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 border border-slate-200 text-left"
+                className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 text-left"
               >
                 <div className={`absolute top-0 left-0 w-full h-2 bg-gradient-to-r ${action.gradient} rounded-t-3xl`}></div>
                 <div className="flex items-start gap-5">
@@ -297,19 +274,9 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Achievements Summary */}
-        <div className="mb-14 animate-fadeInUp animation-delay-400">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl shadow-lg p-8 border border-blue-200/50">
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-5"><div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-700 rounded-2xl flex items-center justify-center text-3xl shadow-lg">🏆</div><div><h3 className="text-2xl font-bold text-gray-900">Achievements</h3><p className="text-gray-600 mt-1">{achievementSummary.total} total · Strongest: {achievementSummary.strongestCategory} · Highest: {achievementSummary.highestLevel}</p><p className="text-sm font-semibold text-purple-700 mt-1">Profile strength: {completion?.strength || 'Needs Improvement'}</p></div></div>
-              <button onClick={() => navigate('/achievements')} className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl">Manage Achievements</button>
-            </div>
-          </div>
-        </div>
-
         {/* Profile Summary */}
         <div className="animate-fadeInUp animation-delay-400">
-          <div className="bg-white rounded-3xl shadow-lg p-8 lg:p-12 border border-slate-200">
+          <div className="bg-white rounded-3xl shadow-xl p-8 lg:p-10 border border-gray-100">
             <h3 className="text-2xl font-bold text-gray-900 mb-8">Your Profile Summary</h3>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="text-center">

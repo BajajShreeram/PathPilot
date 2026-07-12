@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ProfileData } from '../types';
 import { getPersonalizedDeadlines } from '../lib/personalization';
-import { getProfile } from '../utils/profileStorage';
 
 export const DeadlinesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -11,8 +10,9 @@ export const DeadlinesPage: React.FC = () => {
   const [deadlines, setDeadlines] = useState<any[]>([]);
 
   useEffect(() => {
-    const parsedProfile = getProfile();
-    if (parsedProfile) {
+    const storedProfile = localStorage.getItem('pathpilot_profile');
+    if (storedProfile) {
+      const parsedProfile = JSON.parse(storedProfile);
       setProfile(parsedProfile);
       setDeadlines(getPersonalizedDeadlines(parsedProfile));
     } else {

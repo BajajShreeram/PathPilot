@@ -1,101 +1,434 @@
-import { universities } from './universities';
+/**
+ * Comprehensive Scholarship Database
+ * Scholarships for different streams, countries, and needs
+ */
 
-export type ScholarshipStream = 'Engineering' | 'Medical' | 'Commerce' | 'Law' | 'Design' | 'Arts' | 'General' | 'Research' | 'Sports';
-export type ScholarshipType = 'Merit-based' | 'Need-based' | 'Need & Merit' | 'Women in education' | 'Sports' | 'Research' | 'Study abroad';
+export type ScholarshipStream = 'Engineering' | 'Medical' | 'Commerce' | 'Law' | 'Design' | 'Arts' | 'General' | 'Study Abroad';
+export type ScholarshipType = 'Merit-based' | 'Need-based' | 'Need & Merit' | 'Sports' | 'Minority' | 'Women';
 
 export interface Scholarship {
-  id: string;
   name: string;
-  provider: string;
-  country: string;
-  eligibleStreams: ScholarshipStream[];
-  eligibleCountries: string[];
-  studyLevel: string;
-  scholarshipType: ScholarshipType;
-  coverageAmount: string;
-  whatItCovers: string[];
+  amount: string;
+  deadline: string;
   eligibility: string;
-  requiredDocuments: string[];
-  applicationProcess: string[];
-  deadlineInfo: string;
-  renewable: string;
-  difficulty: 'Highly competitive' | 'Competitive' | 'Moderate';
-  officialWebsite: string;
-  shortDescription: string;
-  detailedDescription: string;
-  budgetSuitable: string[];
-  studyAbroad: boolean;
+  type: ScholarshipType;
+  stream: ScholarshipStream;
+  country: string;
+  budgetSuitable: string[]; // LOW, MEDIUM, HIGH, VERY_HIGH
+  description: string;
 }
 
-type NamedSeed = Pick<Scholarship, 'id' | 'name' | 'provider' | 'country' | 'eligibleStreams' | 'eligibleCountries' | 'studyLevel' | 'scholarshipType' | 'coverageAmount' | 'officialWebsite' | 'difficulty'> &
-  Partial<Pick<Scholarship, 'eligibility' | 'deadlineInfo' | 'renewable' | 'studyAbroad'>>;
+export const scholarships: Scholarship[] = [
+  // ============================================
+  // ENGINEERING SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'INSPIRE Scholarship (DST)',
+    amount: '₹80,000/year',
+    deadline: '2025-01-31',
+    eligibility: 'Top 1% students in Class 12 board exams pursuing science',
+    type: 'Merit-based',
+    stream: 'Engineering',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Government scholarship for talented students pursuing natural sciences',
+  },
+  {
+    name: 'JEE Main Scholarship',
+    amount: '₹50,000/year',
+    deadline: '2025-02-28',
+    eligibility: 'Students qualifying JEE Main with good rank',
+    type: 'Merit-based',
+    stream: 'Engineering',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Merit scholarship for JEE qualifiers',
+  },
+  {
+    name: 'NIT Merit Scholarship',
+    amount: 'Full tuition waiver',
+    deadline: '2025-06-30',
+    eligibility: 'Top 5% JEE Main rank holders admitted to NITs',
+    type: 'Merit-based',
+    stream: 'Engineering',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Tuition fee waiver for top performers at NITs',
+  },
 
-const namedSeeds: NamedSeed[] = [
-  { id: 'inspire-she', name: 'INSPIRE Scholarship for Higher Education', provider: 'Department of Science and Technology, Government of India', country: 'India', eligibleStreams: ['Engineering', 'Medical', 'Research'], eligibleCountries: ['India'], studyLevel: 'Undergraduate and integrated postgraduate science study', scholarshipType: 'Merit-based', coverageAmount: 'Published annual scholarship and mentorship support; verify current amount', officialWebsite: 'https://online-inspire.gov.in', difficulty: 'Competitive', eligibility: 'Students pursuing eligible basic and natural science programmes under the current INSPIRE-SHE rules.', renewable: 'Continuation depends on academic performance and current programme rules.' },
-  { id: 'central-sector-india', name: 'Central Sector Scheme of Scholarships for College and University Students', provider: 'Department of Higher Education, Government of India', country: 'India', eligibleStreams: ['General'], eligibleCountries: ['India'], studyLevel: 'Undergraduate and postgraduate', scholarshipType: 'Need & Merit', coverageAmount: 'Government support at the rate published for the current cycle', officialWebsite: 'https://scholarships.gov.in', difficulty: 'Competitive' },
-  { id: 'aicte-pragati', name: 'AICTE Pragati Scholarship for Girl Students', provider: 'All India Council for Technical Education', country: 'India', eligibleStreams: ['Engineering', 'Design'], eligibleCountries: ['India'], studyLevel: 'Diploma and undergraduate technical education', scholarshipType: 'Women in education', coverageAmount: 'Education support under current AICTE rules', officialWebsite: 'https://www.aicte-india.org/schemes/students-development-schemes/Pragati/General-Instructions', difficulty: 'Competitive' },
-  { id: 'aicte-saksham', name: 'AICTE Saksham Scholarship', provider: 'All India Council for Technical Education', country: 'India', eligibleStreams: ['Engineering', 'Design'], eligibleCountries: ['India'], studyLevel: 'Diploma and undergraduate technical education', scholarshipType: 'Need-based', coverageAmount: 'Education support under current AICTE rules', officialWebsite: 'https://www.aicte-india.org', difficulty: 'Competitive' },
-  { id: 'national-sports-india', name: 'National Sports Scholarship Information', provider: 'Sports Authority of India', country: 'India', eligibleStreams: ['Sports', 'General'], eligibleCountries: ['India'], studyLevel: 'School and higher education pathways', scholarshipType: 'Sports', coverageAmount: 'Varies by scheme and sporting achievement', officialWebsite: 'https://sportsauthorityofindia.nic.in', difficulty: 'Competitive' },
-  { id: 'rhodes', name: 'Rhodes Scholarship', provider: 'Rhodes Trust', country: 'UK', eligibleStreams: ['General', 'Research'], eligibleCountries: ['International'], studyLevel: 'Postgraduate', scholarshipType: 'Study abroad', coverageAmount: 'Comprehensive funding under the current constituency rules', officialWebsite: 'https://www.rhodeshouse.ox.ac.uk/scholarships/applications/', difficulty: 'Highly competitive' },
-  { id: 'chevening', name: 'Chevening Scholarships', provider: 'UK Government', country: 'UK', eligibleStreams: ['General'], eligibleCountries: ['International'], studyLevel: 'One-year taught master’s', scholarshipType: 'Study abroad', coverageAmount: 'Tuition and other support according to the current award terms', officialWebsite: 'https://www.chevening.org/scholarships/', difficulty: 'Highly competitive' },
-  { id: 'commonwealth-masters', name: 'Commonwealth Master’s Scholarships', provider: 'Commonwealth Scholarship Commission', country: 'UK', eligibleStreams: ['General', 'Research'], eligibleCountries: ['Eligible Commonwealth countries'], studyLevel: 'Master’s', scholarshipType: 'Study abroad', coverageAmount: 'Funding components vary by award route', officialWebsite: 'https://cscuk.fcdo.gov.uk/scholarships/', difficulty: 'Highly competitive' },
-  { id: 'gates-cambridge', name: 'Gates Cambridge Scholarship', provider: 'Gates Cambridge Trust', country: 'UK', eligibleStreams: ['General', 'Research'], eligibleCountries: ['International'], studyLevel: 'Postgraduate', scholarshipType: 'Merit-based', coverageAmount: 'Full-cost award under current terms', officialWebsite: 'https://www.gatescambridge.org', difficulty: 'Highly competitive' },
-  { id: 'great-scholarships', name: 'GREAT Scholarships', provider: 'British Council and participating UK universities', country: 'UK', eligibleStreams: ['General'], eligibleCountries: ['Eligible countries'], studyLevel: 'Postgraduate', scholarshipType: 'Study abroad', coverageAmount: 'Contribution varies by university and country', officialWebsite: 'https://study-uk.britishcouncil.org/scholarships-funding/great-scholarships', difficulty: 'Competitive' },
-  { id: 'erasmus-mundus', name: 'Erasmus Mundus Joint Masters Scholarships', provider: 'European Union', country: 'Europe', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Design', 'Arts', 'General', 'Research'], eligibleCountries: ['International'], studyLevel: 'Master’s', scholarshipType: 'Study abroad', coverageAmount: 'Participation costs plus possible travel, visa, and living support', officialWebsite: 'https://erasmus-plus.ec.europa.eu/opportunities/individuals/students/erasmus-mundus-joint-masters', difficulty: 'Highly competitive' },
-  { id: 'daad-epos', name: 'DAAD EPOS Scholarships', provider: 'German Academic Exchange Service (DAAD)', country: 'Germany', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'General', 'Research'], eligibleCountries: ['Eligible developing countries'], studyLevel: 'Postgraduate', scholarshipType: 'Study abroad', coverageAmount: 'Programme-specific funding; verify the current call', officialWebsite: 'https://www.daad.de/en/studying-in-germany/scholarships/daad-funding-programmes/', difficulty: 'Highly competitive' },
-  { id: 'fulbright-nehru', name: 'Fulbright-Nehru Fellowships', provider: 'United States-India Educational Foundation', country: 'USA', eligibleStreams: ['General', 'Research'], eligibleCountries: ['India'], studyLevel: 'Master’s, doctoral research, and postdoctoral routes', scholarshipType: 'Study abroad', coverageAmount: 'Varies by fellowship category', officialWebsite: 'https://www.usief.org.in/Fellowships.aspx', difficulty: 'Highly competitive' },
-  { id: 'tata-cornell', name: 'Tata Scholarship at Cornell University', provider: 'Cornell University', country: 'USA', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Design', 'Arts', 'General'], eligibleCountries: ['India'], studyLevel: 'Undergraduate', scholarshipType: 'Need-based', coverageAmount: 'Need-based financial aid under Cornell’s current policy', officialWebsite: 'https://admissions.cornell.edu/afford/tata-scholarship', difficulty: 'Highly competitive' },
-  { id: 'inlaks', name: 'Inlaks Scholarships', provider: 'Inlaks Shivdasani Foundation', country: 'International', eligibleStreams: ['General', 'Design', 'Arts', 'Research'], eligibleCountries: ['India'], studyLevel: 'Postgraduate', scholarshipType: 'Study abroad', coverageAmount: 'Up to the limit published for the current cycle', officialWebsite: 'https://www.inlaksfoundation.org/scholarships/', difficulty: 'Highly competitive' },
-  { id: 'australia-awards', name: 'Australia Awards Scholarships', provider: 'Australian Government', country: 'Australia', eligibleStreams: ['General', 'Research'], eligibleCountries: ['Eligible partner countries'], studyLevel: 'Undergraduate or postgraduate depending on country programme', scholarshipType: 'Study abroad', coverageAmount: 'Benefits vary by country programme and award', officialWebsite: 'https://www.dfat.gov.au/people-to-people/australia-awards', difficulty: 'Highly competitive' },
-  { id: 'mext', name: 'Japanese Government (MEXT) Scholarship', provider: 'Government of Japan', country: 'Japan', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Design', 'Arts', 'General', 'Research'], eligibleCountries: ['International'], studyLevel: 'Undergraduate, postgraduate, research, and specialist routes', scholarshipType: 'Study abroad', coverageAmount: 'Tuition and stipend support according to scholarship category', officialWebsite: 'https://www.studyinjapan.go.jp/en/planning/scholarships/mext-scholarships/', difficulty: 'Highly competitive' },
-  { id: 'gks', name: 'Global Korea Scholarship', provider: 'Government of the Republic of Korea', country: 'South Korea', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Design', 'Arts', 'General', 'Research'], eligibleCountries: ['International'], studyLevel: 'Undergraduate and postgraduate', scholarshipType: 'Study abroad', coverageAmount: 'Funding package varies by programme year', officialWebsite: 'https://www.studyinkorea.go.kr', difficulty: 'Highly competitive' },
-  { id: 'singa', name: 'Singapore International Graduate Award (SINGA)', provider: 'A*STAR and partner universities', country: 'Singapore', eligibleStreams: ['Engineering', 'Medical', 'Research'], eligibleCountries: ['International'], studyLevel: 'PhD', scholarshipType: 'Research', coverageAmount: 'Research training award under current terms', officialWebsite: 'https://www.a-star.edu.sg/Scholarships/for-graduate-studies/singapore-international-graduate-award-singa', difficulty: 'Highly competitive' },
-  { id: 'pearson-toronto', name: 'Lester B. Pearson International Scholarship', provider: 'University of Toronto', country: 'Canada', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Design', 'Arts', 'General'], eligibleCountries: ['International'], studyLevel: 'Undergraduate', scholarshipType: 'Merit-based', coverageAmount: 'Comprehensive award under current university terms', officialWebsite: 'https://future.utoronto.ca/pearson/about/', difficulty: 'Highly competitive' },
-  { id: 'vanier', name: 'Vanier Canada Graduate Scholarships', provider: 'Government of Canada', country: 'Canada', eligibleStreams: ['Engineering', 'Medical', 'Commerce', 'Law', 'Arts', 'General', 'Research'], eligibleCountries: ['Canada', 'International'], studyLevel: 'Doctoral', scholarshipType: 'Research', coverageAmount: 'Graduate funding at the current published rate', officialWebsite: 'https://vanier.gc.ca', difficulty: 'Highly competitive' },
-  { id: 'aga-khan', name: 'Aga Khan Foundation International Scholarship Programme', provider: 'Aga Khan Foundation', country: 'International', eligibleStreams: ['General'], eligibleCountries: ['Eligible countries'], studyLevel: 'Postgraduate', scholarshipType: 'Need & Merit', coverageAmount: 'Funding structure and amount vary; verify current terms', officialWebsite: 'https://the.akdn/en/what-we-do/developing-human-capacity/education/international-scholarships', difficulty: 'Highly competitive' },
-  { id: 'uefa-research', name: 'FIFA Research Scholarship Information', provider: 'FIFA Research Programme', country: 'International', eligibleStreams: ['Sports', 'Research'], eligibleCountries: ['International'], studyLevel: 'Research', scholarshipType: 'Research', coverageAmount: 'Varies by current research call', officialWebsite: 'https://inside.fifa.com/innovation/research', difficulty: 'Competitive' },
-  { id: 'google-women-tech', name: 'Google Women Techmakers Scholars Information', provider: 'Google', country: 'International', eligibleStreams: ['Engineering'], eligibleCountries: ['International'], studyLevel: 'Higher education and professional development opportunities', scholarshipType: 'Women in education', coverageAmount: 'Varies by regional programme and current call', officialWebsite: 'https://www.womentechmakers.com', difficulty: 'Competitive' },
+  // ============================================
+  // MEDICAL SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'AIIMS Merit Scholarship',
+    amount: 'Full tuition waiver',
+    deadline: '2025-03-31',
+    eligibility: 'Top 100 NEET rank holders admitted to AIIMS',
+    type: 'Merit-based',
+    stream: 'Medical',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH'],
+    description: 'Complete fee waiver for top NEET performers',
+  },
+  {
+    name: 'Medical Education Loan Subsidy',
+    amount: 'Interest subsidy on education loans',
+    deadline: '2025-04-15',
+    eligibility: 'Students from families with annual income below ₹4.5 lakh',
+    type: 'Need-based',
+    stream: 'Medical',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Government interest subsidy for medical education loans',
+  },
+  {
+    name: 'State Medical Scholarship',
+    amount: '₹25,000 - ₹50,000/year',
+    deadline: '2025-05-31',
+    eligibility: 'State quota medical students from economically weaker sections',
+    type: 'Need & Merit',
+    stream: 'Medical',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'State government support for medical students',
+  },
+
+  // ============================================
+  // COMMERCE SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'CA Foundation Scholarship',
+    amount: '₹15,000 - ₹30,000',
+    deadline: '2025-03-15',
+    eligibility: 'CA Foundation students with excellent academic record',
+    type: 'Merit-based',
+    stream: 'Commerce',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'ICAI scholarship for talented CA aspirants',
+  },
+  {
+    name: 'Commerce Merit Award',
+    amount: '₹20,000/year',
+    deadline: '2025-04-30',
+    eligibility: 'Top scorers in Class 12 Commerce stream',
+    type: 'Merit-based',
+    stream: 'Commerce',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Recognition award for commerce excellence',
+  },
+
+  // ============================================
+  // LAW SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'CLAT Merit Scholarship',
+    amount: '₹40,000 - ₹80,000/year',
+    deadline: '2025-05-18',
+    eligibility: 'Top 500 CLAT rank holders',
+    type: 'Merit-based',
+    stream: 'Law',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Scholarship for high CLAT achievers',
+  },
+  {
+    name: 'Legal Aid Society Scholarship',
+    amount: '₹25,000/year',
+    deadline: '2025-06-15',
+    eligibility: 'Law students committed to public service',
+    type: 'Need & Merit',
+    stream: 'Law',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'Support for students interested in public interest law',
+  },
+
+  // ============================================
+  // DESIGN SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'NID Merit Scholarship',
+    amount: '₹60,000 - ₹1,00,000/year',
+    deadline: '2025-03-01',
+    eligibility: 'Top performers in NID entrance exam',
+    type: 'Merit-based',
+    stream: 'Design',
+    country: 'India',
+    budgetSuitable: ['MEDIUM', 'HIGH'],
+    description: 'National Institute of Design scholarship for talented designers',
+  },
+  {
+    name: 'Creative Arts Foundation Grant',
+    amount: '₹30,000 - ₹50,000',
+    deadline: '2025-04-30',
+    eligibility: 'Design students with exceptional portfolio',
+    type: 'Merit-based',
+    stream: 'Design',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Grant for creative excellence in design education',
+  },
+
+  // ============================================
+  // ARTS/HUMANITIES SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'UGC NET JRF Fellowship',
+    amount: '₹31,000/month',
+    deadline: '2025-02-28',
+    eligibility: 'Research scholars in humanities and social sciences',
+    type: 'Merit-based',
+    stream: 'Arts',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH'],
+    description: 'Junior Research Fellowship for postgraduate research',
+  },
+  {
+    name: 'Delhi University Merit Scholarship',
+    amount: '₹10,000 - ₹20,000/year',
+    deadline: '2025-04-15',
+    eligibility: 'Top performers in DU arts and humanities programs',
+    type: 'Merit-based',
+    stream: 'Arts',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Merit award for Delhi University arts students',
+  },
+
+  // ============================================
+  // GENERAL SCHOLARSHIPS (All Streams)
+  // ============================================
+  {
+    name: 'National Scholarship Portal (NSP)',
+    amount: '₹10,000 - ₹50,000/year',
+    deadline: '2025-03-15',
+    eligibility: 'Indian students based on merit and family income',
+    type: 'Need & Merit',
+    stream: 'General',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'Central and state government scholarships for all streams',
+  },
+  {
+    name: 'Central Sector Scheme',
+    amount: '₹10,000 - ₹20,000/year',
+    deadline: '2025-04-30',
+    eligibility: 'Students from families with income below ₹4.5 lakh',
+    type: 'Need-based',
+    stream: 'General',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'Government support for economically disadvantaged students',
+  },
+  {
+    name: 'Post-Matric Scholarship for SC/ST',
+    amount: '₹5,000 - ₹25,000/year',
+    deadline: '2025-05-31',
+    eligibility: 'SC/ST students pursuing higher education',
+    type: 'Minority',
+    stream: 'General',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'Government scholarship for scheduled caste/tribe students',
+  },
+  {
+    name: 'Pre-Matric Scholarship for Minorities',
+    amount: '₹3,000 - ₹10,000/year',
+    deadline: '2025-04-15',
+    eligibility: 'Minority community students (Muslim, Christian, Sikh, Buddhist, Jain, Parsi)',
+    type: 'Minority',
+    stream: 'General',
+    country: 'India',
+    budgetSuitable: ['LOW'],
+    description: 'Central government support for minority students',
+  },
+  {
+    name: 'Girl Child Education Scholarship',
+    amount: '₹5,000 - ₹15,000/year',
+    deadline: '2025-05-15',
+    eligibility: 'Female students from economically weaker sections',
+    type: 'Women',
+    stream: 'General',
+    country: 'India',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Promoting education for girl children',
+  },
+
+  // ============================================
+  // STUDY ABROAD SCHOLARSHIPS
+  // ============================================
+  {
+    name: 'Gates Cambridge Scholarship',
+    amount: 'Full tuition + stipend',
+    deadline: '2024-10-14',
+    eligibility: 'International students pursuing graduate studies at Cambridge',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'United Kingdom',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'Prestigious full scholarship for Cambridge University',
+  },
+  {
+    name: 'Fulbright-Nehru Fellowship',
+    amount: 'Full funding + travel',
+    deadline: '2025-02-28',
+    eligibility: 'Indian students for graduate study or research in USA',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'United States',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'Premier India-US educational exchange program',
+  },
+  {
+    name: 'Chevening Scholarships',
+    amount: 'Full tuition + expenses',
+    deadline: '2024-11-07',
+    eligibility: 'Outstanding students from 160+ countries for UK masters',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'United Kingdom',
+    budgetSuitable: ['MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'UK government scholarship for future leaders',
+  },
+  {
+    name: 'Commonwealth Scholarship',
+    amount: 'Full funding',
+    deadline: '2024-12-15',
+    eligibility: 'Commonwealth country citizens for UK graduate study',
+    type: 'Need & Merit',
+    stream: 'Study Abroad',
+    country: 'United Kingdom',
+    budgetSuitable: ['LOW', 'MEDIUM'],
+    description: 'Supporting students from developing Commonwealth countries',
+  },
+  {
+    name: 'DAAD Scholarships',
+    amount: '€850 - €1,200/month',
+    deadline: '2025-03-31',
+    eligibility: 'International students for study in Germany',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'Germany',
+    budgetSuitable: ['MEDIUM', 'HIGH'],
+    description: 'German academic exchange service scholarships',
+  },
+  {
+    name: 'Erasmus Mundus Joint Masters',
+    amount: 'Full tuition + €1,400/month',
+    deadline: '2025-01-15',
+    eligibility: 'Students pursuing Erasmus joint masters programs in Europe',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'European Union',
+    budgetSuitable: ['MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'European Union scholarship for international joint degrees',
+  },
+  {
+    name: 'Australia Awards Scholarship',
+    amount: 'Full tuition + living allowance',
+    deadline: '2025-04-30',
+    eligibility: 'Students from developing countries for study in Australia',
+    type: 'Need & Merit',
+    stream: 'Study Abroad',
+    country: 'Australia',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH'],
+    description: 'Australian government development scholarships',
+  },
+  {
+    name: 'KAIST International Student Scholarship',
+    amount: 'Full tuition + stipend',
+    deadline: '2025-02-15',
+    eligibility: 'International students admitted to KAIST',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'South Korea',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'Full scholarship for international students at KAIST',
+  },
+  {
+    name: 'Inlaks Shivdasani Foundation Scholarship',
+    amount: 'Up to $100,000',
+    deadline: '2025-01-31',
+    eligibility: 'Indian students for graduate study at top US/UK universities',
+    type: 'Merit-based',
+    stream: 'Study Abroad',
+    country: 'United States',
+    budgetSuitable: ['MEDIUM', 'HIGH', 'VERY_HIGH'],
+    description: 'Indian foundation supporting exceptional students abroad',
+  },
+  {
+    name: 'JN Tata Endowment',
+    amount: 'Loan scholarship up to ₹10 lakh',
+    deadline: '2025-03-31',
+    eligibility: 'Indian students for postgraduate studies abroad',
+    type: 'Need & Merit',
+    stream: 'Study Abroad',
+    country: 'Global',
+    budgetSuitable: ['LOW', 'MEDIUM', 'HIGH'],
+    description: 'Interest-free loan scholarship for Indian students studying abroad',
+  },
 ];
 
-const commonDocuments = ['Academic transcripts', 'Proof of identity', 'Statement of purpose', 'Recommendation letters', 'Financial documents when need-based'];
-const commonProcess = ['Check the current official call and eligibility', 'Prepare programme-specific documents', 'Submit through the provider’s official portal', 'Track interview or selection updates directly with the provider'];
+/**
+ * Filter scholarships by stream
+ */
+export const getScholarshipsByStream = (stream: ScholarshipStream): Scholarship[] => {
+  return scholarships.filter((s) => s.stream === stream || s.stream === 'General');
+};
 
-const namedScholarships: Scholarship[] = namedSeeds.map((seed) => ({
-  ...seed,
-  whatItCovers: ['Coverage varies by current award terms', 'Verify tuition, living, travel, and insurance components on the official website'],
-  eligibility: seed.eligibility || 'Applicants must meet the provider’s current nationality, study-level, academic, and programme-specific requirements.',
-  requiredDocuments: commonDocuments,
-  applicationProcess: commonProcess,
-  deadlineInfo: seed.deadlineInfo || 'Deadline varies by annual cycle; verify on the official website.',
-  renewable: seed.renewable || 'Renewal or continuation depends on the current award rules and satisfactory progress.',
-  shortDescription: `${seed.scholarshipType} opportunity for ${seed.studyLevel.toLowerCase()} study in ${seed.country}.`,
-  detailedDescription: `${seed.name} is administered by ${seed.provider}. Award availability, coverage, deadlines, and selection rules can change by cycle, so applicants should verify every requirement on the official website before preparing an application.`,
-  budgetSuitable: ['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'],
-  studyAbroad: seed.studyAbroad ?? seed.country !== 'India',
-}));
+/**
+ * Filter scholarships by budget suitability
+ */
+export const getScholarshipsByBudget = (budget: string): Scholarship[] => {
+  return scholarships.filter((s) => s.budgetSuitable.includes(budget));
+};
 
-const institutionalScholarships: Scholarship[] = universities.slice(0, 90).map((university) => ({
-  id: `institutional-aid-${university.id}`,
-  name: `${university.name} Scholarships and Financial Aid`,
-  provider: university.name,
-  country: university.country,
-  eligibleStreams: [university.stream === 'Other' ? 'General' : university.stream] as ScholarshipStream[],
-  eligibleCountries: university.studyAbroad ? ['International', university.country] : ['India'],
-  studyLevel: 'Undergraduate and postgraduate options; varies by programme',
-  scholarshipType: university.scholarshipAvailability ? 'Need & Merit' : 'Merit-based',
-  coverageAmount: 'Varies by award and academic year; verify on the official website',
-  whatItCovers: ['May include partial or full tuition support', 'Some awards may include living or research support', 'Exact benefits vary by award'],
-  eligibility: `Applicants must meet ${university.name} admission requirements and the criteria of the specific institutional award.`,
-  requiredDocuments: commonDocuments,
-  applicationProcess: ['Review the university’s current funding pages', 'Confirm whether a separate scholarship form is required', 'Complete admission and funding applications by their respective deadlines', 'Monitor the official applicant portal for updates'],
-  deadlineInfo: 'Varies by programme and award; verify on the official university website.',
-  renewable: 'Varies by award; commonly subject to satisfactory academic progress.',
-  difficulty: university.category === 'Dream' ? 'Highly competitive' : university.category === 'Very Good' ? 'Competitive' : 'Moderate',
-  officialWebsite: university.officialWebsite,
-  shortDescription: `Institutional scholarship and financial-aid options for eligible students at ${university.name}.`,
-  detailedDescription: `${university.name} may publish multiple institutional, departmental, merit, need-based, sports, or research funding options. This catalog entry is a discovery starting point rather than a single guaranteed award; use the official website to identify the current scholarship that fits your programme and circumstances.`,
-  budgetSuitable: ['LOW', 'MEDIUM', 'HIGH', 'VERY_HIGH'],
-  studyAbroad: university.studyAbroad,
-}));
+/**
+ * Filter scholarships by country
+ */
+export const getScholarshipsByCountry = (country: string): Scholarship[] => {
+  return scholarships.filter((s) => s.country === country || s.country === 'Global');
+};
 
-export const scholarships: Scholarship[] = [...namedScholarships, ...institutionalScholarships];
+/**
+ * Filter scholarships by need
+ */
+export const getScholarshipsByNeed = (needBased: boolean): Scholarship[] => {
+  if (needBased) {
+    return scholarships.filter((s) => s.type === 'Need-based' || s.type === 'Need & Merit');
+  }
+  return scholarships;
+};
+
+/**
+ * Get personalized scholarships based on multiple criteria
+ */
+export const getPersonalizedScholarships = (
+  stream: ScholarshipStream,
+  budget: string,
+  needScholarships: boolean,
+  studyAbroad: boolean
+): Scholarship[] => {
+  let filtered = scholarships;
+
+  // Filter by stream
+  if (studyAbroad) {
+    filtered = filtered.filter((s) => s.stream === 'Study Abroad' || s.stream === 'General');
+  } else {
+    filtered = filtered.filter((s) => s.stream === stream || s.stream === 'General');
+  }
+
+  // Filter by budget suitability
+  filtered = filtered.filter((s) => s.budgetSuitable.includes(budget));
+
+  // Prioritize need-based if needed
+  if (needScholarships) {
+    const needBased = filtered.filter((s) => s.type === 'Need-based' || s.type === 'Need & Merit');
+    const meritBased = filtered.filter((s) => s.type === 'Merit-based');
+    filtered = [...needBased, ...meritBased];
+  }
+
+  return filtered;
+};

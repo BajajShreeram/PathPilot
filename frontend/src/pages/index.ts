@@ -9,7 +9,3 @@ export { UniversitiesPage } from './UniversitiesPage';
 export { ScholarshipsPage } from './ScholarshipsPage';
 export { DeadlinesPage } from './DeadlinesPage';
 export { ProfileTestPage } from './ProfileTestPage';
-export { ProfilePage } from './ProfilePage';
-export { LoginPage } from './LoginPage';
-export { AchievementsPage } from './AchievementsPage';
-export { ForgotPasswordPage, ResetPasswordPage } from './PasswordPages';

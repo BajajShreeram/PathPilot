@@ -1,5 +1,4 @@
 import type { ProfileData } from '../types';
-import { clearCurrentUserProfile, getProfile, saveProfile as persistProfile } from './profileStorage';
 
 /**
  * Profile validation and utility functions
@@ -139,21 +138,34 @@ export const validateProfileField = (field: keyof ProfileData, value: any): stri
  * Get profile from localStorage
  */
 export const getStoredProfile = (): ProfileData | null => {
-  return getProfile();
+  try {
+    const stored = localStorage.getItem('pathpilot_profile');
+    if (!stored) return null;
+    return JSON.parse(stored) as ProfileData;
+  } catch (error) {
+    console.error('Error reading profile from localStorage:', error);
+    return null;
+  }
 };
 
 /**
  * Save profile to localStorage
  */
 export const saveProfile = (profile: ProfileData): boolean => {
-  return persistProfile(profile);
+  try {
+    localStorage.setItem('pathpilot_profile', JSON.stringify(profile));
+    return true;
+  } catch (error) {
+    console.error('Error saving profile to localStorage:', error);
+    return false;
+  }
 };
 
 /**
  * Clear profile from localStorage
  */
 export const clearStoredProfile = (): void => {
-  clearCurrentUserProfile();
+  localStorage.removeItem('pathpilot_profile');
 };
 
 /**

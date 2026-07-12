@@ -31,10 +31,9 @@ class Settings(BaseSettings):
     SUPABASE_KEY: str = ""
     SUPABASE_JWT_SECRET: str = ""
 
-    # Mesh API Configuration
+    # Mesh API Configuration (will be added when integrating)
     MESH_API_KEY: str = ""
-    MESH_MODEL: str = "openai/gpt-4o"
-    MESH_API_URL: str = "https://api.meshapi.ai/v1/chat/completions"
+    MESH_API_URL: str = ""
 
     class Config:
         env_file = ".env"

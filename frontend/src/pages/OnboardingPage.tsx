@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Checkbox } from '../components/ui/Checkbox';
 import { Button } from '../components/ui/Button';
 import type { ProfileData } from '../types';
-import { getProfile, saveProfileToSupabase } from '../utils/profileStorage';
-import { getCurrentUser } from '../utils/authSession';
 
 const STREAMS = [
   { value: 'Engineering', label: 'Engineering' },
@@ -35,18 +33,6 @@ const BUDGETS = [
   { value: 'MEDIUM', label: '₹5-15 lakh/year' },
   { value: 'HIGH', label: '₹15-30 lakh/year' },
   { value: 'VERY_HIGH', label: 'Above ₹30 lakh/year' },
-];
-
-const EXAMS = [
-  { value: 'JEE Main', label: 'JEE Main' },
-  { value: 'JEE Advanced', label: 'JEE Advanced' },
-  { value: 'NEET', label: 'NEET' },
-  { value: 'CUET', label: 'CUET' },
-  { value: 'CLAT', label: 'CLAT' },
-  { value: 'NATA', label: 'NATA' },
-  { value: 'SAT/ACT', label: 'SAT / ACT' },
-  { value: 'IELTS/TOEFL', label: 'IELTS / TOEFL' },
-  { value: 'None', label: 'No preference yet' },
 ];
 
 const ALL_SUBJECTS = [
@@ -91,15 +77,12 @@ const CAREER_OPTIONS = [
 
 export const OnboardingPage: React.FC = () => {
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [currentStep, setCurrentStep] = useState(1);
 
   const [formData, setFormData] = useState<ProfileData>({
     name: '',
-    grade: '',
     gradeClass: '',
-    country: 'India',
     stream: '',
     studyAbroad: false,
     preferredCountry: '',
@@ -111,15 +94,7 @@ export const OnboardingPage: React.FC = () => {
     strongSubjects: [],
     weakSubjects: [],
     careerInterests: [],
-    examPreference: '',
   });
-
-  useEffect(() => {
-    const savedProfile = getProfile();
-    if (savedProfile) setFormData(savedProfile);
-  }, []);
-
-  if (!currentUser) return <Navigate to="/login" replace />;
 
   const handleInputChange = (field: keyof ProfileData, value: string | boolean | string[]) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -155,7 +130,6 @@ export const OnboardingPage: React.FC = () => {
 
     if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.gradeClass.trim()) newErrors.gradeClass = 'Grade/Class is required';
-    if (!formData.country?.trim()) newErrors.country = 'Home country is required';
     if (!formData.stream) newErrors.stream = 'Stream/Field is required';
     if (formData.studyAbroad && !formData.preferredCountry) {
       newErrors.preferredCountry = 'Please select a preferred country for study abroad';
@@ -190,13 +164,14 @@ export const OnboardingPage: React.FC = () => {
     setCurrentStep(1);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (validateStep2()) {
       // Save to localStorage
-      try { await saveProfileToSupabase({ ...formData, grade: formData.gradeClass }); navigate('/dashboard'); }
-      catch (error) { setErrors({ submit: error instanceof Error ? error.message : 'Unable to save profile.' }); }
+      localStorage.setItem('pathpilot_profile', JSON.stringify(formData));
+      // Navigate to dashboard
+      navigate('/dashboard');
     }
   };
 
@@ -238,16 +213,6 @@ export const OnboardingPage: React.FC = () => {
                 placeholder="e.g., Grade 10, 12th Grade, Freshman"
                 required
                 error={errors.gradeClass}
-              />
-
-              <Input
-                label="Home Country"
-                type="text"
-                value={formData.country || ''}
-                onChange={(e) => handleInputChange('country', e.target.value)}
-                placeholder="e.g., India"
-                required
-                error={errors.country}
               />
 
               {/* Stream/Field */}
@@ -324,13 +289,6 @@ export const OnboardingPage: React.FC = () => {
                 options={BUDGETS}
                 required
                 error={errors.budget}
-              />
-
-              <Select
-                label="Preferred Entrance Exam"
-                value={formData.examPreference || ''}
-                onChange={(e) => handleInputChange('examPreference', e.target.value)}
-                options={EXAMS}
               />
 
               {/* Need Scholarships */}

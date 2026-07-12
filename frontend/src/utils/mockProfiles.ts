@@ -1,5 +1,4 @@
 import type { ProfileData } from '../types';
-import { clearCurrentUserProfile, getProfile, saveProfile } from './profileStorage';
 
 /**
  * Mock profile test scenarios for testing and development
@@ -113,7 +112,7 @@ export const MOCK_PROFILES: Record<string, ProfileData> = {
 export const loadMockProfile = (profileKey: keyof typeof MOCK_PROFILES): void => {
   const profile = MOCK_PROFILES[profileKey];
   if (profile) {
-    saveProfile(profile);
+    localStorage.setItem('pathpilot_profile', JSON.stringify(profile));
     console.log(`✅ Loaded mock profile: ${profileKey}`, profile);
   }
 };
@@ -122,7 +121,7 @@ export const loadMockProfile = (profileKey: keyof typeof MOCK_PROFILES): void =>
  * Clear profile from localStorage
  */
 export const clearProfile = (): void => {
-  clearCurrentUserProfile();
+  localStorage.removeItem('pathpilot_profile');
   console.log('🗑️ Profile cleared from localStorage');
 };
 
@@ -130,5 +129,6 @@ export const clearProfile = (): void => {
  * Get current profile from localStorage
  */
 export const getCurrentProfile = (): ProfileData | null => {
-  return getProfile();
+  const stored = localStorage.getItem('pathpilot_profile');
+  return stored ? JSON.parse(stored) : null;
 };

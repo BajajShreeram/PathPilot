@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Link, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { getProfile } from '../utils/profileStorage';
-import { confirmAndSignOut, isAuthenticated } from '../utils/authSession';
+import { Link, useLocation, Outlet } from 'react-router-dom';
 
 /**
  * MainLayout - ChatGPT-style layout with collapsible sidebar
@@ -10,7 +8,6 @@ import { confirmAndSignOut, isAuthenticated } from '../utils/authSession';
  */
 const MainLayout = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -21,30 +18,21 @@ const MainLayout = () => {
     { path: '/universities', label: 'Universities', icon: '🎓' },
     { path: '/scholarships', label: 'Scholarships', icon: '💰' },
     { path: '/deadlines', label: 'Deadlines', icon: '📅' },
-    { path: '/achievements', label: 'Achievements', icon: '🏆' },
-    { path: '/profile', label: 'Profile', icon: '👤' },
+    { path: '/onboarding', label: 'Profile', icon: '👤' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
-  const handleSignOut = async () => {
-    if (await confirmAndSignOut()) navigate('/login', { replace: true });
-  };
-
-  if (!isAuthenticated() || !getProfile()) {
-    return <Navigate to="/login" replace />;
-  }
-
   return (
-    <div className="pathpilot-app flex h-screen overflow-hidden bg-slate-50">
+    <div className="flex h-screen overflow-hidden bg-gradient-to-br from-gray-50 to-blue-50/30">
       {/* Desktop Sidebar - Part of layout, not fixed overlay */}
       <aside
         className={`hidden lg:flex lg:flex-col bg-white border-r border-gray-200 transition-all duration-300 ease-in-out ${
-          isSidebarCollapsed ? 'lg:w-20' : 'lg:w-72'
+          isSidebarCollapsed ? 'lg:w-20' : 'lg:w-64'
         }`}
       >
         {/* Logo/Brand */}
-        <div className="px-5 py-6 border-b border-gray-100 flex items-center justify-between">
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
           {!isSidebarCollapsed ? (
             <Link to="/dashboard" className="flex items-center gap-3 group">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-105 transition-transform">
@@ -67,17 +55,17 @@ const MainLayout = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {navItems.map((item) => {
             const active = isActive(item.path);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-xl transition-all duration-200 ${
+                className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 ${
                   active
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow-md'
-                    : 'text-gray-600 hover:bg-slate-100 hover:text-gray-900'
+                    : 'text-gray-700 hover:bg-gray-100'
                 } ${isSidebarCollapsed ? 'justify-center' : ''}`}
                 title={isSidebarCollapsed ? item.label : undefined}
               >
@@ -90,19 +78,8 @@ const MainLayout = () => {
           })}
         </nav>
 
-        <div className="border-t border-gray-100 p-4">
-          <button
-            onClick={handleSignOut}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-red-600 hover:bg-red-50 ${isSidebarCollapsed ? 'justify-center' : ''}`}
-            title="Sign Out"
-          >
-            <span aria-hidden="true">↪</span>
-            {!isSidebarCollapsed && <span className="text-sm font-medium">Sign Out</span>}
-          </button>
-        </div>
-
         {/* Collapse Button */}
-        <div className="p-4 border-t border-gray-100">
+        <div className="p-3 border-t border-gray-100">
           <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-gray-700 hover:bg-gray-100 transition-all ${
@@ -192,7 +169,7 @@ const MainLayout = () => {
         </div>
 
         {/* Mobile Navigation */}
-        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-9rem)]">
+        <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100%-5rem)]">
           {navItems.map((item) => {
             const active = isActive(item.path);
             return (
@@ -212,15 +189,10 @@ const MainLayout = () => {
             );
           })}
         </nav>
-        <div className="border-t border-gray-100 p-3">
-          <button onClick={handleSignOut} className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-red-600 hover:bg-red-50">
-            <span aria-hidden="true">↪</span><span className="text-sm font-medium">Sign Out</span>
-          </button>
-        </div>
       </aside>
 
       {/* Main Content Area - Flexbox automatically calculates width */}
-      <main className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
+      <main className="flex-1 overflow-y-auto">
         {/* Mobile spacing for fixed header */}
         <div className="lg:hidden h-16" />
         
