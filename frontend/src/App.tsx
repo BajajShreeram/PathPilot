@@ -12,6 +12,8 @@ import {
   ScholarshipsPage,
   DeadlinesPage,
   ProfileTestPage,
+  ProfilePage,
+  AchievementsPage,
 } from './pages';
 
 /**
@@ -57,6 +59,14 @@ const router = createBrowserRouter([
       {
         path: 'deadlines',
         element: <DeadlinesPage />,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: 'achievements',
+        element: <AchievementsPage />,
       },
       {
         path: 'app',

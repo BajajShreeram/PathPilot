@@ -18,7 +18,8 @@ const MainLayout = () => {
     { path: '/universities', label: 'Universities', icon: '🎓' },
     { path: '/scholarships', label: 'Scholarships', icon: '💰' },
     { path: '/deadlines', label: 'Deadlines', icon: '📅' },
-    { path: '/onboarding', label: 'Profile', icon: '👤' },
+    { path: '/achievements', label: 'Achievements', icon: '🏆' },
+    { path: '/profile', label: 'Profile', icon: '👤' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
