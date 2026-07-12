@@ -23,15 +23,15 @@ export const getUniversityRecommendations = (profile: ProfileData | null): Recom
 
   // Engineering/CS focus
   if (
-    profile.careerInterests.some((c) => ['Engineering', 'Computer Science/IT'].includes(c)) ||
-    profile.favouriteSubjects.includes('Computer Science')
+    (profile.careerInterests ?? []).some((c) => ['Engineering', 'Computer Science/IT'].includes(c)) ||
+    (profile.favouriteSubjects ?? []).includes('Computer Science')
   ) {
     recommendations.push({
       title: 'MIT',
       description: 'Top engineering and computer science programs',
       category: 'university',
       relevanceScore: 95,
-      reasons: ['Strong in ' + profile.careerInterests[0], 'World-class faculty', 'Great research opportunities'],
+      reasons: ['Strong in ' + (profile.careerInterests ?? [])[0], 'World-class faculty', 'Great research opportunities'],
     });
 
     recommendations.push({
@@ -45,8 +45,8 @@ export const getUniversityRecommendations = (profile: ProfileData | null): Recom
 
   // Medicine/Biology focus
   if (
-    profile.careerInterests.includes('Medicine') ||
-    profile.favouriteSubjects.some((s) => ['Biology', 'Chemistry'].includes(s))
+    (profile.careerInterests ?? []).includes('Medicine') ||
+    (profile.favouriteSubjects ?? []).some((s) => ['Biology', 'Chemistry'].includes(s))
   ) {
     recommendations.push({
       title: 'Johns Hopkins University',
@@ -58,7 +58,7 @@ export const getUniversityRecommendations = (profile: ProfileData | null): Recom
   }
 
   // Business/Finance focus
-  if (profile.careerInterests.some((c) => ['Business', 'Finance', 'Marketing'].includes(c))) {
+  if ((profile.careerInterests ?? []).some((c) => ['Business', 'Finance', 'Marketing'].includes(c))) {
     recommendations.push({
       title: 'Wharton School',
       description: 'World-renowned business program',
@@ -69,7 +69,7 @@ export const getUniversityRecommendations = (profile: ProfileData | null): Recom
   }
 
   // Arts focus
-  if (profile.careerInterests.includes('Arts & Design') || profile.favouriteSubjects.includes('Art')) {
+  if ((profile.careerInterests ?? []).includes('Arts & Design') || (profile.favouriteSubjects ?? []).includes('Art')) {
     recommendations.push({
       title: 'Parsons School of Design',
       description: 'Leading art and design institution',
@@ -132,7 +132,7 @@ export const getScholarshipRecommendations = (profile: ProfileData | null): Reco
   }
 
   // Merit-based (strong profile)
-  if (profile.favouriteSubjects.length >= 3 || profile.careerInterests.length >= 2) {
+  if ((profile.favouriteSubjects ?? []).length >= 3 || (profile.careerInterests ?? []).length >= 2) {
     recommendations.push({
       title: 'Rhodes Scholarship',
       description: 'Prestigious scholarship to Oxford University',
@@ -155,7 +155,7 @@ export const getScholarshipRecommendations = (profile: ProfileData | null): Reco
 
   // STEM focus
   if (
-    profile.favouriteSubjects.some((s) => ['Mathematics', 'Physics', 'Chemistry', 'Computer Science'].includes(s))
+    (profile.favouriteSubjects ?? []).some((s) => ['Mathematics', 'Physics', 'Chemistry', 'Computer Science'].includes(s))
   ) {
     recommendations.push({
       title: 'National Science Foundation Scholarships',
@@ -178,7 +178,7 @@ export const getCareerRecommendations = (profile: ProfileData | null): Recommend
   const recommendations: Recommendation[] = [];
 
   // Based on subjects and interests
-  if (profile.favouriteSubjects.includes('Computer Science') && !profile.careerInterests.includes('Computer Science/IT')) {
+  if ((profile.favouriteSubjects ?? []).includes('Computer Science') && !(profile.careerInterests ?? []).includes('Computer Science/IT')) {
     recommendations.push({
       title: 'Software Engineering',
       description: 'Design and develop software systems',
@@ -188,7 +188,7 @@ export const getCareerRecommendations = (profile: ProfileData | null): Recommend
     });
   }
 
-  if (profile.favouriteSubjects.includes('Mathematics') && profile.careerInterests.includes('Finance')) {
+  if ((profile.favouriteSubjects ?? []).includes('Mathematics') && (profile.careerInterests ?? []).includes('Finance')) {
     recommendations.push({
       title: 'Quantitative Analyst',
       description: 'Apply math and statistics to financial markets',
@@ -198,7 +198,7 @@ export const getCareerRecommendations = (profile: ProfileData | null): Recommend
     });
   }
 
-  if (profile.favouriteSubjects.some((s) => ['Biology', 'Chemistry'].includes(s)) && !profile.careerInterests.includes('Medicine')) {
+  if ((profile.favouriteSubjects ?? []).some((s) => ['Biology', 'Chemistry'].includes(s)) && !(profile.careerInterests ?? []).includes('Medicine')) {
     recommendations.push({
       title: 'Biomedical Research',
       description: 'Conduct research in life sciences',
@@ -220,7 +220,7 @@ export const getResourceRecommendations = (profile: ProfileData | null): Recomme
   const recommendations: Recommendation[] = [];
 
   // Based on career interests
-  profile.careerInterests.forEach((interest) => {
+  (profile.careerInterests ?? []).forEach((interest) => {
     if (interest === 'Computer Science/IT') {
       recommendations.push({
         title: 'freeCodeCamp',
@@ -288,9 +288,9 @@ export const getPersonalizedInsights = (profile: ProfileData | null): string[] =
   }
 
   // Career alignment
-  if (profile.careerInterests.length > 0 && profile.favouriteSubjects.length > 0) {
-    const hasAlignment = profile.careerInterests.some((career) =>
-      career.toLowerCase().includes(profile.favouriteSubjects[0].toLowerCase())
+  if ((profile.careerInterests ?? []).length > 0 && (profile.favouriteSubjects ?? []).length > 0) {
+    const hasAlignment = (profile.careerInterests ?? []).some((career) =>
+      career.toLowerCase().includes((profile.favouriteSubjects ?? [])[0].toLowerCase())
     );
     if (hasAlignment) {
       insights.push('✅ Your career interests align well with your favourite subjects!');

@@ -6,7 +6,7 @@ import { scholarships, type Scholarship, getPersonalizedScholarships } from '../
 /**
  * Safely get a value from profile with fallback to old key
  */
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   // Try new key first, then old key, then default

@@ -1,0 +1,76 @@
+
+> pathpilot-frontend@0.0.0 build
+> tsc -b && vite build
+
+src/components/landing/Footer.tsx(11,9): error TS2503: Cannot find namespace 'JSX'.
+src/components/ui/index.ts(1,23): error TS2307: Cannot find module './ui/Input' or its corresponding type declarations.
+src/components/ui/index.ts(2,24): error TS2307: Cannot find module './ui/Select' or its corresponding type declarations.
+src/components/ui/index.ts(3,26): error TS2307: Cannot find module './ui/Checkbox' or its corresponding type declarations.
+src/components/ui/index.ts(4,24): error TS2307: Cannot find module './ui/Button' or its corresponding type declarations.
+src/layouts/MainLayout.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/lib/personalization.ts(17,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(17,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(18,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(21,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(21,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(22,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/lib/personalization.ts(46,9): error TS6133: 'dreamUni' is declared but its value is never read.
+src/lib/personalization.ts(122,9): error TS6133: 'nextYear' is declared but its value is never read.
+src/pages/AIMentorPage.tsx(62,9): error TS6133: 'navigate' is declared but its value is never read.
+src/pages/DashboardPage.tsx(14,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/DashboardPage.tsx(14,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/DashboardPage.tsx(15,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/DashboardPage.tsx(18,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/DashboardPage.tsx(18,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/DashboardPage.tsx(19,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(29,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(29,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(30,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(33,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(33,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(34,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/RoadmapPage.tsx(43,9): error TS6133: 'navigate' is declared but its value is never read.
+src/pages/RoadmapPage.tsx(141,40): error TS6133: 'profileData' is declared but its value is never read.
+src/pages/ScholarshipsPage.tsx(13,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/ScholarshipsPage.tsx(13,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/ScholarshipsPage.tsx(14,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/ScholarshipsPage.tsx(17,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/ScholarshipsPage.tsx(17,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/ScholarshipsPage.tsx(18,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(13,7): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(13,40): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(14,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(17,17): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(17,50): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(18,12): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'ProfileData'.
+  No index signature with a parameter of type 'string' was found on type 'ProfileData'.
+src/pages/UniversitiesPage.tsx(135,16): error TS2367: This comparison appears to be unintentional because the types 'Stream' and '"Study Abroad"' have no overlap.

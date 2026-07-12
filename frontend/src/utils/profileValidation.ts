@@ -10,12 +10,15 @@ import type { ProfileData } from '../types';
 export const isProfileComplete = (profile: ProfileData | null): boolean => {
   if (!profile) return false;
 
+  const favouriteSubjects = profile.favouriteSubjects ?? [];
+  const careerInterests = profile.careerInterests ?? [];
+
   return !!(
     profile.name?.trim() &&
     profile.gradeClass?.trim() &&
     profile.country &&
-    profile.favouriteSubjects?.length > 0 &&
-    profile.careerInterests?.length > 0 &&
+    favouriteSubjects.length > 0 &&
+    careerInterests.length > 0 &&
     profile.budget
   );
 };
@@ -26,14 +29,17 @@ export const isProfileComplete = (profile: ProfileData | null): boolean => {
 export const getProfileCompletionPercentage = (profile: ProfileData | null): number => {
   if (!profile) return 0;
 
+  const favouriteSubjects = profile.favouriteSubjects ?? [];
+  const careerInterests = profile.careerInterests ?? [];
+
   let completed = 0;
   const total = 8; // Total fields including optional
 
   if (profile.name?.trim()) completed++;
   if (profile.gradeClass?.trim()) completed++;
   if (profile.country) completed++;
-  if (profile.favouriteSubjects?.length > 0) completed++;
-  if (profile.careerInterests?.length > 0) completed++;
+  if (favouriteSubjects.length > 0) completed++;
+  if (careerInterests.length > 0) completed++;
   if (profile.budget) completed++;
   if (profile.dreamUniversity?.trim()) completed++;
   // needScholarships is always set (boolean), so count it
@@ -52,11 +58,14 @@ export const getMissingFields = (profile: ProfileData | null): string[] => {
     return ['name', 'gradeClass', 'country', 'favouriteSubjects', 'careerInterests', 'budget'];
   }
 
+  const favouriteSubjects = profile.favouriteSubjects ?? [];
+  const careerInterests = profile.careerInterests ?? [];
+
   if (!profile.name?.trim()) missing.push('Name');
   if (!profile.gradeClass?.trim()) missing.push('Grade/Class');
   if (!profile.country) missing.push('Country');
-  if (!profile.favouriteSubjects || profile.favouriteSubjects.length === 0) missing.push('Favourite Subjects');
-  if (!profile.careerInterests || profile.careerInterests.length === 0) missing.push('Career Interests');
+  if (favouriteSubjects.length === 0) missing.push('Favourite Subjects');
+  if (careerInterests.length === 0) missing.push('Career Interests');
   if (!profile.budget) missing.push('Budget');
 
   return missing;
@@ -171,10 +180,11 @@ export const needsScholarships = (profile: ProfileData | null): boolean => {
  * Get primary career interest
  */
 export const getPrimaryCareer = (profile: ProfileData | null): string | null => {
-  if (!profile || !profile.careerInterests || profile.careerInterests.length === 0) {
+  const careerInterests = profile?.careerInterests ?? [];
+  if (careerInterests.length === 0) {
     return null;
   }
-  return profile.careerInterests[0];
+  return careerInterests[0];
 };
 
 /**
@@ -183,12 +193,13 @@ export const getPrimaryCareer = (profile: ProfileData | null): string | null => 
 export const getProfileSummary = (profile: ProfileData | null): string => {
   if (!profile) return 'No profile found';
 
+  const careerInterests = profile.careerInterests ?? [];
   const parts: string[] = [];
 
   if (profile.gradeClass) parts.push(profile.gradeClass);
   if (profile.country) parts.push(`from ${profile.country}`);
-  if (profile.careerInterests && profile.careerInterests.length > 0) {
-    parts.push(`interested in ${profile.careerInterests[0]}`);
+  if (careerInterests.length > 0) {
+    parts.push(`interested in ${careerInterests[0]}`);
   }
 
   return parts.join(', ');

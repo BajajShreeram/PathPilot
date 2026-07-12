@@ -8,7 +8,7 @@ import {
   needsScholarships,
 } from '../utils/profileValidation';
 
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   if (profile[newKey] !== undefined && profile[newKey] !== null) {

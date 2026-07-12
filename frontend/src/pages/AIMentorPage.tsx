@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface Message {
   id: string;
@@ -18,7 +17,15 @@ interface ProfileData {
   examPreference?: string;
   favouriteSubjects?: string[];
   subjects?: string[];
-  [key: string]: any;
+  gradeClass: string;
+  budget: string;
+  needScholarships: boolean;
+  preferredCountry?: string;
+  dreamUniversity?: string;
+  subjectInterests?: string[];
+  strongSubjects?: string[];
+  weakSubjects?: string[];
+  country?: string;
 }
 
 const SUGGESTED_PROMPTS = [
@@ -44,7 +51,7 @@ const SUGGESTED_PROMPTS = [
   },
 ];
 
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   if (profile[newKey] !== undefined && profile[newKey] !== null) {
@@ -59,7 +66,6 @@ const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: s
 };
 
 export const AIMentorPage: React.FC = () => {
-  const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import type { ProfileData } from '../types';
 
 type TaskStatus = 'not-started' | 'in-progress' | 'completed';
@@ -23,7 +22,7 @@ interface RoadmapProgress {
   };
 }
 
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   if (profile[newKey] !== undefined && profile[newKey] !== null) {
@@ -40,7 +39,6 @@ const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: s
 const ROADMAP_STORAGE_KEY = 'pathpilot_roadmap_progress';
 
 export const RoadmapPage: React.FC = () => {
-  const navigate = useNavigate();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [progress, setProgress] = useState<RoadmapProgress>({});
@@ -51,7 +49,7 @@ export const RoadmapPage: React.FC = () => {
       try {
         const parsedProfile = JSON.parse(storedProfile) as ProfileData;
         setProfile(parsedProfile);
-        const roadmap = generatePersonalizedRoadmap(parsedProfile);
+        const roadmap = generatePersonalizedRoadmap();
         setMilestones(roadmap);
         
         const storedProgress = localStorage.getItem(ROADMAP_STORAGE_KEY);
@@ -138,7 +136,7 @@ export const RoadmapPage: React.FC = () => {
   const { completedTasks, totalTasks, percentage } = calculateProgress();
   const nextTask = getNextRecommendedTask();
 
-  const generatePersonalizedRoadmap = (profileData: ProfileData | null): Milestone[] => {
+  const generatePersonalizedRoadmap = (): Milestone[] => {
     // Keeping business logic as-is
     return generateDefaultRoadmap();
   };

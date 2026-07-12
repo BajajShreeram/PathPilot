@@ -6,7 +6,7 @@ import { universities, type University } from '../data/universities';
 /**
  * Safely get a value from profile with fallback to old key
  */
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   // Try new key first, then old key, then default
@@ -65,14 +65,12 @@ export const UniversitiesPage: React.FC = () => {
     const subjectsRaw = getProfileValue(profileData, 'favouriteSubjects', 'subjects', []);
     const safeSubjects = Array.isArray(subjectsRaw) ? subjectsRaw : [];
     const subjects = safeSubjects.map((s) => String(s || '').toLowerCase());
-    
-    const country = String(getProfileValue(profileData, 'preferredCountry', 'country', '') || '').toLowerCase();
 
     // Get stream from new profile structure or determine from career/subjects
-    let stream = getProfileValue(profileData, 'stream', 'field', 'Study Abroad');
+    let stream = getProfileValue(profileData, 'stream', 'field', '');
 
     // If no stream in profile, determine from profile data
-    if (!stream || stream === 'Other' || stream === 'Study Abroad') {
+    if (!stream || stream === 'Other') {
       // Determine stream from career interests and subjects
       if (
         careerInterests.some((c) => c.includes('engineering') || c.includes('computer') || c.includes('it')) ||
@@ -109,30 +107,14 @@ export const UniversitiesPage: React.FC = () => {
         subjects.some((s) => s.includes('english') || s.includes('history'))
       ) {
         stream = 'Arts';
-      } else {
-        stream = 'Study Abroad';
       }
     }
-
-    // Check if studying abroad
-    const studyAbroad = getProfileValue(profileData, 'studyAbroad', undefined, false);
-    const dreamUni = String(getProfileValue(profileData, 'dreamUniversity', undefined, '') || '').toLowerCase();
-    const isAbroad =
-      studyAbroad === true ||
-      (country !== 'in' &&
-        country !== 'india' &&
-        country !== '' &&
-        (dreamUni.includes('mit') ||
-          dreamUni.includes('stanford') ||
-          dreamUni.includes('harvard') ||
-          dreamUni.includes('oxford') ||
-          dreamUni.includes('cambridge')));
 
     // Filter universities by stream - safe filter
     let filtered = universities.filter((uni) => {
       if (!uni || !uni.stream) return false;
-      if (isAbroad) {
-        return uni.stream === 'Study Abroad' || uni.country !== 'India';
+      if (profileData.studyAbroad) {
+        return uni.country !== 'India';
       }
       return uni.stream === stream;
     });
@@ -171,10 +153,10 @@ export const UniversitiesPage: React.FC = () => {
         const safeSubjects = Array.isArray(subjectsRaw) ? subjectsRaw : [];
         const subjects = safeSubjects.map((s) => String(s || '').toLowerCase());
         
-        let stream = getProfileValue(parsedProfile, 'stream', 'field', 'Study Abroad');
+        let stream = getProfileValue(parsedProfile, 'stream', 'field', '');
         
         // If no stream in profile, determine from profile data
-        if (!stream || stream === 'Other' || stream === 'Study Abroad') {
+        if (!stream || stream === 'Other') {
           if (
             careerInterests.some((c) => c.includes('engineering') || c.includes('computer') || c.includes('it')) ||
             subjects.some((s) => s.includes('physics') || s.includes('computer'))
@@ -204,8 +186,6 @@ export const UniversitiesPage: React.FC = () => {
             subjects.some((s) => s.includes('english') || s.includes('history'))
           ) {
             stream = 'Arts';
-          } else {
-            stream = 'Study Abroad';
           }
         }
 

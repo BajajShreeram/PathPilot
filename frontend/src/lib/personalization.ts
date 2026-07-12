@@ -10,7 +10,7 @@ export interface StreamInfo {
 /**
  * Safely get a value from profile with fallback to old key
  */
-const getProfileValue = (profile: ProfileData | null, newKey: string, oldKey?: string, defaultValue: any = null): any => {
+const getProfileValue = (profile: ProfileData | null, newKey: keyof ProfileData, oldKey?: keyof ProfileData, defaultValue: any = null): any => {
   if (!profile) return defaultValue;
   
   // Try new key first, then old key, then default
@@ -43,7 +43,6 @@ export const getStreamFromProfile = (profile: ProfileData | null): StreamInfo =>
   const stream = getProfileValue(profile, 'stream', 'field', 'Other');
   // Support: studyAbroad
   const isAbroad = getProfileValue(profile, 'studyAbroad', undefined, false) === true;
-  const dreamUni = (getProfileValue(profile, 'dreamUniversity', undefined, '') || '').toLowerCase();
 
   // Map stream to exams
   let exams: string[] = [];
@@ -119,7 +118,6 @@ export const generateDynamicDates = () => {
 
   // If we're past October, use next year for most exams
   const examYear = currentMonth >= 10 ? currentYear + 1 : currentYear;
-  const nextYear = examYear + 1;
 
   return {
     // Early deadlines (Oct-Nov)
